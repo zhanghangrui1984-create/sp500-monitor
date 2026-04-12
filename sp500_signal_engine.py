@@ -231,9 +231,17 @@ def compute_signals(data, today=None):
                 else:
                     print(f"  [P+/P-] PE历史方差过小(σ={_pe_std:.2f})，数据质量不足，跳过")
             else:
-                print(f"  [P+/P-] 历史PE数据不足({_window}行，{_pe_unique}个不同值)，暂不计算")
+                print(f"  [P+/P-] 历史PE数据不足({_window}行，{_pe_unique}个不同值)，使用简单阈值")
+                # 兜底：使用固定历史均值阈值（标普500 Forward PE历史中枢约16~22）
+                P_plus  = bool(fpe_val > 24.0)   # 高于1σ上轨近似
+                P_minus = bool(fpe_val < 16.0)   # 低于1σ下轨近似
+                print(f"  [P+/P-] 兜底: PE={fpe_val:.1f} P+={P_plus} P-={P_minus}")
         except Exception as e:
             print(f"  [P+/P-] 计算失败: {e}")
+            # 异常兜底
+            if fpe_val:
+                P_plus  = bool(fpe_val > 24.0)
+                P_minus = bool(fpe_val < 16.0)
 
     # ── 门槛
     e15 = bool(ERP >= 1.5) if ERP is not None else None

@@ -1,0 +1,60 @@
+name: SP500监控每日运行
+
+on:
+  schedule:
+    # - cron: '30 14 * * 1-5'   # 冬季 EST（11月初启用）
+    - cron: '30 13 * * 1-5'     # 夏季 EDT（当前生效）：09:30 ET
+  workflow_dispatch:              # 允许手动触发
+
+jobs:
+  run-monitor:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 拉取数据库文件
+        uses: actions/checkout@v4
+        with:
+          ref: data
+          path: data-branch
+        continue-on-error: true
+
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 安装依赖
+        run: |
+          pip install yfinance pandas numpy requests fredapi python-docx openpyxl
+
+      - name: 准备数据目录
+        run: |
+          mkdir -p data logs
+          if [ -f data-branch/sp500_realtime_db.csv ]; then
+            cp data-branch/sp500_realtime_db.csv data/
+            echo "已恢复历史数据库"
+          fi
+
+      - name: 运行监控程序
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
+        run: python sp500_main_cloud.py
+
+      - name: 保存数据库到data分支
+        run: |
+          if [ -f data/sp500_realtime_db.csv ]; then
+            git config user.email "github-actions@github.com"
+            git config user.name "GitHub Actions"
+            git fetch origin data 2>/dev/null || true
+            git checkout -B data origin/data 2>/dev/null || git checkout --orphan data
+            git rm -rf . 2>/dev/null || true
+            cp $GITHUB_WORKSPACE/data/sp500_realtime_db.csv .
+            git add sp500_realtime_db.csv
+            git commit -m "更新SP500数据库 $(date +%Y-%m-%d)" || echo "无变化"
+            git push origin data --force
+          fi

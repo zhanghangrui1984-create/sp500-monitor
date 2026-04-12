@@ -265,12 +265,15 @@ def compute_signals(data, today=None):
 
     # 公共必要条件（1系列）：W+200 AND 回撤区间 AND ERP≥1.5% AND NOT N+≥0.3 AND NOT P+
     def _base1(low, high):
-        if e15 is None or P_plus is None: return None
-        return bool(W200 and low <= sp_dd_pct < high and e15 and not N_plus_03 and not P_plus)
+        if e15 is None: return None
+        # P_plus=None时当False处理（无历史PE数据时保守假设估值未过热）
+        pp = bool(P_plus) if P_plus is not None else False
+        return bool(W200 and low <= sp_dd_pct < high and e15 and not N_plus_03 and not pp)
 
     def _base1_d():
-        if e15 is None or P_plus is None: return None
-        return bool(W200 and sp_dd_pct >= 23.5 and e15 and not N_plus_03 and not P_plus)
+        if e15 is None: return None
+        pp = bool(P_plus) if P_plus is not None else False
+        return bool(W200 and sp_dd_pct >= 23.5 and e15 and not N_plus_03 and not pp)
 
     # 情景1A（半仓，E+2，1选1）
     SC1A = None
@@ -352,7 +355,7 @@ def compute_signals(data, today=None):
 
     # 离场1：W+200 AND (Y- or E-/E-2) AND F+ AND ERP<0 AND (N-≥0.15 or P+)
     EX1 = None
-    if all(v is not None for v in [Y_minus, F_plus, ERP_lt0, N_minus_015, P_plus]):
+    if all(v is not None for v in [Y_minus, F_plus, ERP_lt0, N_minus_015]):  # P_plus允许None
         e_minus_any = bool(e_minus or e_minus2) if e_minus is not None else False
         gate = bool(W200 and (Y_minus or e_minus_any) and F_plus and ERP_lt0)
         cnt  = sum([bool(N_minus_015 or False), bool(P_plus or False)])
@@ -360,7 +363,7 @@ def compute_signals(data, today=None):
 
     # 离场2：W+200 AND S-1 AND S_dd+ AND N_c≥0.1 AND V>V_p AND 7选4
     EX2 = None
-    if all(v is not None for v in [Y_minus, N_minus_015, F_plus, P_plus, ERP_lt10]):
+    if all(v is not None for v in [Y_minus, N_minus_015, F_plus, ERP_lt10]):  # P_plus允许None
         e_minus2_ok = bool(e_minus2) if e_minus2 is not None else False
         gate2 = bool(W200 and S_m1 and S_ddp and N_c_ge01 and
                      vix_now is not None and V_p is not None and vix_now > V_p)

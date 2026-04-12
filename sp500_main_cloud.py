@@ -30,6 +30,7 @@ os.makedirs('data', exist_ok=True)
 from sp500_data_fetcher  import fetch_all_data
 from sp500_signal_engine import compute_signals
 from sp500_notifier      import send_email_with_attachment
+from sp500_report_generator import generate_report
 from sp500_cache_manager import (load_db, update_db, get_eps_signals,
                                   db_status, backfill_eps)
 
@@ -104,9 +105,13 @@ def run():
 
         save_log(snapshot)
 
+        # 生成docx报告
+        print("生成详细报告...")
+        report_path = generate_report(snapshot)
+
         # 发送邮件
-        print("发送邮件通知...")
-        send_email_with_attachment(snapshot, None)
+        print("发送邮件通知（含附件）...")
+        send_email_with_attachment(snapshot, report_path)
 
         print("\n✅ 云端运行完成。\n")
 

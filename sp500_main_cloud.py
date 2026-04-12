@@ -103,6 +103,30 @@ def run():
         # 回填历史EPS
         backfill_eps(pe_val)
 
+        # 回填历史PE（若DB中PE为常数则从multpl.com补充真实历史数据）
+        try:
+            from sp500_backfill_pe import fetch_pe_from_multpl, fetch_pe_from_gurufocus, backfill_pe_to_db
+            import sp500_cache_manager as _scm
+            _pe_db = pd.read_csv(_scm.DB_FILE, index_col='date', parse_dates=True)
+            _pe_unique = _pe_db['forward_pe'].dropna().nunique() if 'forward_pe' in _pe_db.columns else 0
+            if _pe_unique <= 3:  # PE为常数，需要回填
+                print("检测到PE历史为常数，尝试回填真实PE数据...")
+                _pe_hist = fetch_pe_from_multpl() or fetch_pe_from_gurufocus()
+                if _pe_hist is not None:
+                    backfill_pe_to_db(_pe_hist)
+                    # 重新计算P+/P-
+                    _pe_db2 = pd.read_csv(_scm.DB_FILE, index_col='date', parse_dates=True)
+                    _pe_series = _pe_db2['forward_pe'].dropna()
+                    _w = min(1260, len(_pe_series))
+                    if _w >= 252 and _pe_series.std() > 0.5:
+                        _avg = float(_pe_series.rolling(_w, min_periods=252).mean().iloc[-1])
+                        _std = float(_pe_series.rolling(_w, min_periods=252).std().iloc[-1])
+                        snapshot['P_plus']  = bool(pe_val > _avg + _std) if pe_val else None
+                        snapshot['P_minus'] = bool(pe_val < _avg - _std) if pe_val else None
+                        print(f"  P+/P- 更新: PE={pe_val:.1f} 均={_avg:.1f} σ={_std:.2f} P+={snapshot['P_plus']} P-={snapshot['P_minus']}")
+        except Exception as _pe_e:
+            print(f"  PE回填跳过: {_pe_e}")
+
         save_log(snapshot)
 
         # 生成docx报告

@@ -80,8 +80,9 @@ def fmt_val(val, fmt_str='', suffix=''):
 def build_conditions(snapshot):
     s = snapshot
 
-    def yn(val, positive=True):
-        if val is None: return '?'
+    def yn(val, positive=True, none_as=None):
+        """none_as: 指定None时的返回值，默认'?'"""
+        if val is None: return none_as if none_as else '?'
         return '✓' if (bool(val) == positive) else '✗'
 
     sp_dd  = fmt_val(s.get('sp_dd_pct'), '.1f', '%')
@@ -133,7 +134,7 @@ def build_conditions(snapshot):
          _trigger_v(1)),
         ('  Y+（收益率曲线不倒挂）',   y_sp,   yn(s.get('Y_plus', False))),
         ('  N_front（流动性改善）',    n_c4w,  yn(s.get('N_front', False))),
-        ('  P-（估值偏低）',           fpe,    yn(s.get('P_minus', False))),
+        ('  P-（估值偏低）',           fpe,    yn(s.get('P_minus'), none_as='✗')),
         ('  V_new（恐慌后企稳）',      ve_m20, yn(s.get('V_new', False))),
     ]
 
@@ -144,7 +145,7 @@ def build_conditions(snapshot):
         ('ERP≥1.5%',                   erp,    yn(s.get('erp') and s['erp'] >= 1.5)),
         ('E+2',                        str(e_plus2), yn(e_plus2)),
         ('NOT N+≥0.3',                 n_c4w,  yn(not (s.get('N_c_4w') and s['N_c_4w'] <= -0.3))),
-        ('NOT P+',                     fpe,    yn(not s.get('P_plus', False))),
+        ('NOT P+',                     fpe,    yn(not bool(s.get('P_plus') or False))),
         ('触发器（1选1）：Y+/N_front/P-/V_new', '',
          _trigger_v(1)),
     ]
@@ -156,12 +157,12 @@ def build_conditions(snapshot):
         ('ERP≥1.5%',                   erp,    yn(s.get('erp') and s['erp'] >= 1.5)),
         ('E+（EPS单期增长，弱版）',    str(e_plus), yn(e_plus)),
         ('NOT N+≥0.3',                 n_c4w,  yn(not (s.get('N_c_4w') and s['N_c_4w'] <= -0.3))),
-        ('NOT P+',                     fpe,    yn(not s.get('P_plus', False))),
+        ('NOT P+',                     fpe,    yn(not bool(s.get('P_plus') or False))),
         ('触发器（4选2）：Y+/N_front/P-/V_new', '',
          _trigger_v(2)),
         ('  Y+',                       y_sp,   yn(s.get('Y_plus', False))),
         ('  N_front',                  n_c4w,  yn(s.get('N_front', False))),
-        ('  P-',                       fpe,    yn(s.get('P_minus', False))),
+        ('  P-',                       fpe,    yn(s.get('P_minus'), none_as='✗')),
         ('  V_new',                    ve_m20, yn(s.get('V_new', False))),
     ]
 
@@ -172,7 +173,7 @@ def build_conditions(snapshot):
         ('ERP≥1.5%',                   erp,    yn(s.get('erp') and s['erp'] >= 1.5)),
         ('E+',                         str(e_plus), yn(e_plus)),
         ('NOT N+≥0.3',                 n_c4w,  yn(not (s.get('N_c_4w') and s['N_c_4w'] <= -0.3))),
-        ('NOT P+',                     fpe,    yn(not s.get('P_plus', False))),
+        ('NOT P+',                     fpe,    yn(not bool(s.get('P_plus') or False))),
         ('触发器（4选2）：Y+/N_front/P-/V_new', '',
          _trigger_v(2)),
     ]
@@ -256,7 +257,7 @@ def build_conditions(snapshot):
         ('N≥0.2（流动性显著收紧）',        nfci,  yn(s.get('nfci') is not None and s['nfci'] >= 0.2)),
         ('N_c>0.1（月度快速恶化）',        n_c4w, yn(s.get('N_c_gt01', False))),
         ('ERP<4.0%',                       erp,   yn(s.get('erp') is not None and s['erp'] < 4.0)),
-        ('S_t⬆（当前价>入场价）',          st_str, yn(sp_t_up)),
+        # S_t⬆ 由操作人自行判断，系统不检测
     ]
 
     # 离场1
@@ -270,7 +271,7 @@ def build_conditions(snapshot):
          yn(cnt1 >= 1)),
         ('  N-≥0.15（流动性月度收紧）',    n_c4w,  yn(s.get('N_minus_015', False))),
         ('  P+（估值偏高）',               fpe,    yn(s.get('P_plus', False))),
-        ('S_t⬆',                           st_str, yn(sp_t_up)),
+        # S_t⬆ 由操作人自行判断
     ]
 
     # 离场2
@@ -299,7 +300,7 @@ def build_conditions(snapshot):
         ('  P+',                            fpe,    yn(s.get('P_plus', False))),
         ('  ERP<1.0%',                      erp,    yn(s.get('erp') is not None and s['erp'] < 1.0)),
         ('  MFG<-3%（制造业收缩）',        mfg,    yn(s.get('MFG_lt3', False))),
-        ('S_t⬆',                           st_str, yn(sp_t_up)),
+        # S_t⬆ 由操作人自行判断
     ]
 
     return conds

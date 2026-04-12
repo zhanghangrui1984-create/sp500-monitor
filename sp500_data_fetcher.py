@@ -126,8 +126,8 @@ def fetch_all_data():
     print("[4/12] Y利差（T10Y2Y）...")
     data['y_series'] = get_fred_series('T10Y2Y', 500)
 
-    print("[5/12] 联储利率...")
-    data['f_series'] = get_fred_series('FEDFUNDS', 600)
+    print("[5/12] 联储利率（日度DFF）...")
+    data['f_series'] = get_fred_series('DFF', 1500)
 
     print("[6/12] 实际利率...")
     data['r_series'] = get_fred_series('DFII10', 500)

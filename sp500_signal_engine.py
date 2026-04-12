@@ -153,9 +153,9 @@ def compute_signals(data, today=None):
     N_lt04 = None; N_front = None; N_c_gt01 = None; N_c_ge01 = None
     N_c_neg = None; N_ge02 = None
 
-    if nfci_s is not None and nfci_now is not None and len(nfci_s) >= 21:
+    if nfci_s is not None and nfci_now is not None and len(nfci_s) >= 5:  # 周度，>=5保证4周变化可算
         nfci_s2    = nfci_s.sort_index()
-        N_c_4w_val = float(nfci_s2.iloc[-1] - nfci_s2.iloc[-21])
+        N_c_4w_val = float(nfci_s2.iloc[-1] - nfci_s2.iloc[-5])  # NFCI周度数据，4周前=第5个到最新
         N_c_4w      = N_c_4w_val
         N_plus_015  = bool(N_c_4w_val <= -0.15)
         N_minus_015 = bool(N_c_4w_val >= 0.15)
@@ -170,13 +170,13 @@ def compute_signals(data, today=None):
     # ── WALCL (W1000)
     W1000 = False
     if walcl_s is not None and len(walcl_s) >= 14:
-        ws2 = walcl_s.sort_index() / 1e6  # 转换为万亿$
-        chg13w = ws2 - ws2.shift(13)
+        ws2    = walcl_s.sort_index() / 1e6  # 转换为万亿$
+        chg13w = (ws2 - ws2.shift(13)).dropna()  # 去掉NaN，避免误报
         trig   = (chg13w >= 0.1)
         # 触发后13周内持续有效
         eff = False
         for i in range(max(0, len(trig)-14), len(trig)):
-            if trig.iloc[i]:
+            if bool(trig.iloc[i]):
                 eff = True
                 break
         W1000 = eff
@@ -218,12 +218,20 @@ def compute_signals(data, today=None):
             _db      = pd.read_csv(_cm.DB_FILE, index_col='date', parse_dates=True)
             _pe_hist = _db['forward_pe'].dropna()
             _window  = min(1260, len(_pe_hist))
-            if _window >= 63:
-                _pe_avg = float(_pe_hist.rolling(_window, min_periods=_window).mean().iloc[-1])
-                _pe_std = float(_pe_hist.rolling(_window, min_periods=_window).std().iloc[-1])
-                P_plus  = bool(fpe_val > _pe_avg + _pe_std)
-                P_minus = bool(fpe_val < _pe_avg - _pe_std)
-                print(f"  [P+/P-] PE={fpe_val:.1f} 均={_pe_avg:.1f} σ={_pe_std:.1f} → P+={P_plus} P-={P_minus}")
+            # 注意：初始化时PE历史全为常数，std≈0，P+/P-无意义
+            # 需积累真实历史PE才可靠（至少252行不同PE值）
+            _pe_unique = _pe_hist.nunique()
+            if _window >= 252 and _pe_unique >= 10:
+                _pe_avg = float(_pe_hist.rolling(_window, min_periods=252).mean().iloc[-1])
+                _pe_std = float(_pe_hist.rolling(_window, min_periods=252).std().iloc[-1])
+                if _pe_std > 0.5:  # std太小说明数据质量不足
+                    P_plus  = bool(fpe_val > _pe_avg + _pe_std)
+                    P_minus = bool(fpe_val < _pe_avg - _pe_std)
+                    print(f"  [P+/P-] PE={fpe_val:.1f} 均={_pe_avg:.1f} σ={_pe_std:.1f} → P+={P_plus} P-={P_minus}")
+                else:
+                    print(f"  [P+/P-] PE历史方差过小(σ={_pe_std:.2f})，数据质量不足，跳过")
+            else:
+                print(f"  [P+/P-] 历史PE数据不足({_window}行，{_pe_unique}个不同值)，暂不计算")
         except Exception as e:
             print(f"  [P+/P-] 计算失败: {e}")
 

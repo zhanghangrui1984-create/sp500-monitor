@@ -1,5 +1,5 @@
 # ══════════════════════════════════════════════
-# 标普500监控系统 v10.1 — 信号计算引擎
+# 标普500监控系统 v10.3 — 信号计算引擎
 # ══════════════════════════════════════════════
 
 import pandas as pd
@@ -43,6 +43,7 @@ def compute_signals(data, today=None):
     walcl_s = to_series(data.get('walcl_series'))
     cpi_s   = to_series(data.get('cpi_series'))
     mfg_s   = to_series(data.get('mfg_series'))
+    oil_s   = to_series(data.get('oil_series'))
     fpe_val = data.get('forward_pe')
 
     if sp_s is None or len(sp_s) < 100:
@@ -200,6 +201,24 @@ def compute_signals(data, today=None):
         mfg_yoy_now = float(mfg_yoy.iloc[-1])
         MFG_lt3     = bool(mfg_yoy_now < -3.0)
 
+    # ── OIL（WTI原油）
+    oil_now = None; OIL_c20 = None; OIL_pct5y = None; OIL_block = False
+    if oil_s is not None and len(oil_s) >= 21:
+        oil_s2   = oil_s.sort_index().dropna()
+        oil_now  = float(oil_s2.iloc[-1])
+        # OIL_c20：20日涨幅
+        if len(oil_s2) >= 21:
+            OIL_c20 = float((oil_s2.iloc[-1] / oil_s2.iloc[-21] - 1) * 100)
+        # OIL_pct5y：当前价格在过去5年（1260日）的百分位
+        if len(oil_s2) >= 252:
+            window = min(1260, len(oil_s2))
+            hist   = oil_s2.iloc[-window:]
+            OIL_pct5y = float((hist < oil_now).sum() / len(hist) * 100)
+        OIL_c20_hit  = bool(OIL_c20 is not None and OIL_c20 >= 30)
+        OIL_pct5y_hit= bool(OIL_pct5y is not None and OIL_pct5y > 85)
+        OIL_block    = bool(OIL_c20_hit or OIL_pct5y_hit)
+        print(f"  [OIL] 价格={oil_now:.1f} 20日涨幅={OIL_c20:.1f}% 5年百分位={OIL_pct5y:.1f}% OIL_block={OIL_block}")
+
     # ── TLT
     tlt_now = last_val(tlt_s)
 
@@ -254,7 +273,7 @@ def compute_signals(data, today=None):
     N_plus_03 = bool(N_c_4w <= -0.30) if N_c_4w is not None else False
 
     # ══════════════════════════════════════════════
-    # 入场情景（v10.1）
+    # 入场情景（v10.3）
     # ══════════════════════════════════════════════
 
     def _e2_ok():  return bool(e_plus2) if e_plus2 is not None else None
@@ -305,22 +324,23 @@ def compute_signals(data, today=None):
     if b1d is not None and _e1_ok() is not None and _trigger2() is not None:
         SC2D = bool(b1d and _e1_ok() and _trigger2())
 
-    # 情景3A（全仓，回撤≥5%，5选3）
+    # 情景3A（全仓，回撤≥5%，5选3）v10.3：ERP门槛升至2.5%，计分ERP项升至3%，OIL屏蔽
+    e30 = bool(ERP >= 3.0) if ERP is not None else None
     SC3A = None
-    if e15 is not None and N_front is not None:
+    if e25 is not None and N_front is not None:
         score3a = sum([
             bool(e_plus or e_plus2) if (e_plus is not None) else 0,
             bool(F0 or F_minus) if F0 is not None else 0,
-            bool(e25) if e25 is not None else 0,
+            bool(e30) if e30 is not None else 0,   # v10.3: ERP≥3%
             bool(S_p1),
             bool(V_calm or Y_plus) if Y_plus is not None else 0,
         ])
-        SC3A = bool(W200 and sp_dd_pct >= 5 and e15 and N_front and score3a >= 3)
+        SC3A = bool(W200 and sp_dd_pct >= 5 and e25 and N_front and
+                    not OIL_block and score3a >= 3)
 
-    # 情景3B（全仓，回撤<5%，4选2，含CPI/R限制）
+    # 情景3B（全仓，回撤<5%，4选2）v10.3：OIL屏蔽（替代CPI/R屏蔽）
     SC3B = None
     if e15 is not None and N_front is not None and _ea_ok() is not None:
-        cpi_r_block = bool(CPI_gt4 and r_now is not None and r_now < 0)
         score3b = sum([
             bool(F0 or F_minus) if F0 is not None else 0,
             bool(e25) if e25 is not None else 0,
@@ -328,7 +348,7 @@ def compute_signals(data, today=None):
             bool(V_calm or Y_plus) if Y_plus is not None else 0,
         ])
         SC3B = bool(W200 and sp_dd_pct < 5 and e15 and N_front and
-                    _ea_ok() and not cpi_r_block and score3b >= 2)
+                    _ea_ok() and not OIL_block and score3b >= 2)
 
     # 情景4A（极端危机，深度）
     SC4A = None
@@ -346,7 +366,7 @@ def compute_signals(data, today=None):
                     V_e > 80.0 and nfci_now < 1.0 and W1000)
 
     # ══════════════════════════════════════════════
-    # 离场情景（v10.1）
+    # 离场情景（v10.3）
     # ══════════════════════════════════════════════
     from config import ENTRY_SP, SC4_IMMUNE_UNTIL
     sp_t_up = bool(sp_now > float(ENTRY_SP)) if ENTRY_SP and float(ENTRY_SP) > 0 else None
@@ -419,6 +439,10 @@ def compute_signals(data, today=None):
         'cpi_yoy':      round(cpi_yoy_now, 2) if cpi_yoy_now is not None else None,
         'mfg_yoy':      round(mfg_yoy_now, 2) if mfg_yoy_now is not None else None,
         'tlt_price':    round(tlt_now, 2) if tlt_now is not None else None,
+        'oil_price':    round(oil_now, 2) if oil_now is not None else None,
+        'OIL_c20':      round(OIL_c20, 1) if OIL_c20 is not None else None,
+        'OIL_pct5y':    round(OIL_pct5y, 1) if OIL_pct5y is not None else None,
+        'OIL_block':    OIL_block,
         'S_p1':         S_p1, 'S_m1': S_m1, 'S_ddp': S_ddp, 'sp_pp': round(sp_pp, 2),
         'Y_plus':       Y_plus, 'Y_minus': Y_minus,
         'F_plus':       F_plus, 'F_minus': F_minus, 'F0': F0,

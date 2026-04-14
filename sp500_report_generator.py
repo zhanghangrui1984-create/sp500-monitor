@@ -1,5 +1,5 @@
 # ══════════════════════════════════════════════
-# 标普500监控系统 v10.1 — 报告生成模块
+# 标普500监控系统 v10.3 — 报告生成模块
 # ══════════════════════════════════════════════
 
 import os
@@ -182,27 +182,27 @@ def build_conditions(snapshot):
     score3a_items = [
         bool(e_plus or e_plus2) if e_plus is not None else False,
         bool(s.get('F0') or s.get('F_minus')),
-        bool(s.get('erp') and s['erp'] >= 2.5),
+        bool(s.get('erp') and s['erp'] >= 3.0),   # v10.3: ERP≥3%
         bool(s.get('S_p1', False)),
         bool(s.get('V_calm') or s.get('Y_plus')),
     ]
     score3a = sum(score3a_items)
+    oil_str = f"{fmt_val(s.get('OIL_c20'),'.1f','%')} / {fmt_val(s.get('OIL_pct5y'),'.1f','%')}"
     conds['情景3A'] = [
-        ('W+200',                         w200,  yn(s.get('W200'))),
-        ('S回撤≥5%',                       sp_dd, yn((s.get('sp_dd_pct') or 0) >= 5)),
-        ('ERP≥1.5%',                       erp,   yn(s.get('erp') and s['erp'] >= 1.5)),
-        ('N_front（流动性改善）',           n_c4w, yn(s.get('N_front', False))),
-        (f'计分≥3（当前{score3a}/5）',      '',    yn(score3a >= 3)),
-        ('  E+或E+2',                      str(e_plus or e_plus2), yn(score3a_items[0])),
-        ('  F0或F-（联储中性/宽松）',       fed,   yn(score3a_items[1])),
-        ('  ERP≥2.5%',                     erp,   yn(score3a_items[2])),
-        ('  S+1（月度上涨）',               '',    yn(score3a_items[3])),
-        ('  V≤V_c或Y+',                    vix,   yn(score3a_items[4])),
+        ('W+200',                              w200,  yn(s.get('W200'))),
+        ('S回撤≥5%',                           sp_dd, yn((s.get('sp_dd_pct') or 0) >= 5)),
+        ('ERP≥2.5%（v10.3升级）',              erp,   yn(s.get('erp') and s['erp'] >= 2.5)),
+        ('N_front（流动性改善）',               n_c4w, yn(s.get('N_front', False))),
+        ('NOT OIL_block（无能源冲击）',        oil_str, yn(not s.get('OIL_block', False))),
+        (f'计分≥3（当前{score3a}/5）',          '',    yn(score3a >= 3)),
+        ('  E+或E+2',                          str(e_plus or e_plus2), yn(score3a_items[0])),
+        ('  F0或F-（联储中性/宽松）',           fed,   yn(score3a_items[1])),
+        ('  ERP≥3%（v10.3升级）',              erp,   yn(score3a_items[2])),
+        ('  S+1（月度上涨）',                   '',    yn(score3a_items[3])),
+        ('  V≤V_c或Y+',                        vix,   yn(score3a_items[4])),
     ]
 
     # ── 情景3B
-    cpi_r_block = bool(s.get('CPI_gt4') and s.get('real_rate') is not None and
-                       float(s.get('real_rate') or 0) < 0)
     score3b_items = [
         bool(s.get('F0') or s.get('F_minus')),
         bool(s.get('erp') and s['erp'] >= 2.5),
@@ -211,17 +211,17 @@ def build_conditions(snapshot):
     ]
     score3b = sum(score3b_items)
     conds['情景3B'] = [
-        ('W+200',                         w200,  yn(s.get('W200'))),
-        ('S回撤<5%',                       sp_dd, yn((s.get('sp_dd_pct') or 0) < 5)),
-        ('ERP≥1.5%',                       erp,   yn(s.get('erp') and s['erp'] >= 1.5)),
-        ('N_front',                        n_c4w, yn(s.get('N_front', False))),
-        ('E+或E+2',                        str(e_plus or e_plus2), yn(bool(e_plus or e_plus2) if e_plus is not None else False)),
-        ('NOT (CPI>4% AND R<0)',           '',    yn(not cpi_r_block)),
-        (f'计分≥2（当前{score3b}/4）',      '',    yn(score3b >= 2)),
-        ('  F0或F-',                        fed,   yn(score3b_items[0])),
-        ('  ERP≥2.5%',                     erp,   yn(score3b_items[1])),
-        ('  S+1',                           '',    yn(score3b_items[2])),
-        ('  V≤V_c或Y+',                    vix,   yn(score3b_items[3])),
+        ('W+200',                              w200,  yn(s.get('W200'))),
+        ('S回撤<5%',                           sp_dd, yn((s.get('sp_dd_pct') or 0) < 5)),
+        ('ERP≥1.5%',                           erp,   yn(s.get('erp') and s['erp'] >= 1.5)),
+        ('N_front',                            n_c4w, yn(s.get('N_front', False))),
+        ('E+或E+2',                            str(e_plus or e_plus2), yn(bool(e_plus or e_plus2) if e_plus is not None else False)),
+        ('NOT OIL_block（无能源冲击，v10.3）', oil_str, yn(not s.get('OIL_block', False))),
+        (f'计分≥2（当前{score3b}/4）',          '',    yn(score3b >= 2)),
+        ('  F0或F-',                            fed,   yn(score3b_items[0])),
+        ('  ERP≥2.5%',                         erp,   yn(score3b_items[1])),
+        ('  S+1',                               '',    yn(score3b_items[2])),
+        ('  V≤V_c或Y+',                        vix,   yn(score3b_items[3])),
     ]
 
     # ── 情景4A
@@ -333,7 +333,7 @@ def generate_report(snapshot):
 
     sub = doc.add_paragraph()
     sub.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run2 = sub.add_run(f'{date_str}  |  v10.1  |  自动生成')
+    run2 = sub.add_run(f'{date_str}  |  v10.3  |  自动生成')
     run2.font.size = Pt(9); run2.font.name = 'Arial'; run2.font.color.rgb = C_GRAY
 
     env_para = doc.add_paragraph()
@@ -375,6 +375,10 @@ def generate_report(snapshot):
          ('WALCL_1000亿/13周', '✓' if snapshot.get('W1000') else '✗')],
         [('TLT（空仓期）',  tlt_str),
          ('V_new（恐慌企稳）', '✓' if snapshot.get('V_new') else '✗')],
+        [('OIL原油价格',    fmt_val(snapshot.get('oil_price'), '.1f')),
+         ('OIL_block屏蔽',  '⚠️ 是' if snapshot.get('OIL_block') else '否')],
+        [('OIL_c20(20日涨幅)', fmt_val(snapshot.get('OIL_c20'), '.1f', '%')),
+         ('OIL_pct5y(5年百分位)', fmt_val(snapshot.get('OIL_pct5y'), '.1f', '%'))],
     ]
     add_kv_table(doc, indicator_rows, cols=4)
     doc.add_paragraph()
@@ -478,7 +482,7 @@ def generate_report(snapshot):
 
     doc.add_paragraph()
     footer = doc.add_paragraph(
-        f'标普500全周期交易模型监控系统 v10.1  |  自动生成于 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+        f'标普500全周期交易模型监控系统 v10.3  |  自动生成于 {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
     footer.runs[0].font.size = Pt(8)
     footer.runs[0].font.color.rgb = C_GRAY

@@ -1,5 +1,5 @@
 # ══════════════════════════════════════════════
-# 标普500监控系统 v10.1 — 数据抓取模块
+# 标普500监控系统 v10.3 — 数据抓取模块
 # ══════════════════════════════════════════════
 
 import yfinance as yf
@@ -114,46 +114,61 @@ def fetch_all_data():
     print("=" * 50)
     data = {}
 
-    print("[1/12] 标普500历史数据...")
+    print("[1/13] 标普500历史数据...")
     data['sp500_series'] = get_sp500_history()
 
-    print("[2/12] VIX恐慌指数...")
+    print("[2/13] VIX恐慌指数...")
     data['vix_series'] = get_vix_history()
 
-    print("[3/12] TLT（20年期国债ETF）...")
+    print("[3/13] TLT（20年期国债ETF）...")
     data['tlt_series'] = get_tlt_history()
 
-    print("[4/12] Y利差（T10Y2Y）...")
+    print("[4/13] Y利差（T10Y2Y）...")
     data['y_series'] = get_fred_series('T10Y2Y', 500)
 
-    print("[5/12] 联储利率（日度DFF）...")
+    print("[5/13] 联储利率（日度DFF）...")
     data['f_series'] = get_fred_series('DFF', 1500)
 
-    print("[6/12] 实际利率...")
+    print("[6/13] 实际利率...")
     data['r_series'] = get_fred_series('DFII10', 500)
 
-    print("[7/12] HY信用利差...")
+    print("[7/13] HY信用利差...")
     data['hy_series'] = get_fred_series('BAMLH0A0HYM2', 500)
 
-    print("[8/12] NFCI...")
+    print("[8/13] NFCI...")
     nfci = get_fred_series('NFCI', 600)
     if nfci is not None:
         nfci.index = nfci.index + timedelta(days=5)  # 发布延迟5天
     data['nfci_series'] = nfci
 
-    print("[9/12] WALCL...")
+    print("[9/13] WALCL...")
     walcl = get_fred_series('WALCL', 400)
     if walcl is not None:
         walcl.index = walcl.index + timedelta(days=1)  # 延迟1天
     data['walcl_series'] = walcl
 
-    print("[10/12] CPI...")
+    print("[10/13] CPI...")
     data['cpi_series'] = get_fred_series('CPIAUCSL', 700)
 
-    print("[11/12] MFG制造业新订单...")
+    print("[11/13] MFG制造业新订单...")
     data['mfg_series'] = get_fred_series('NEWORDER', 400)
 
-    print("[12/12] Forward PE...")
+    print("[12/13] OIL原油价格（WTI）...")
+    try:
+        oil_s = yf_close("CL=F", "10y")
+        if oil_s is None or len(oil_s) < 100:
+            # 备用：USO ETF近似
+            oil_s = yf_close("USO", "10y")
+            if oil_s is not None:
+                print(f"  [USO] 最新={float(oil_s.iloc[-1]):.2f}")
+        else:
+            print(f"  [CL=F] WTI最新={float(oil_s.iloc[-1]):.2f}")
+        data['oil_series'] = oil_s
+    except Exception as e:
+        print(f"  [OIL] 失败: {e}")
+        data['oil_series'] = None
+
+    print("[13/13] Forward PE...")
     data['forward_pe'] = get_forward_pe()
 
     print("=" * 50)

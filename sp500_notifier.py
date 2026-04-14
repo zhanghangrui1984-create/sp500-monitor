@@ -1,5 +1,5 @@
 # ══════════════════════════════════════════════
-# 标普500监控系统 v10.1 — 邮件通知模块
+# 标普500监控系统 v10.3 — 邮件通知模块
 # ══════════════════════════════════════════════
 
 import os
@@ -46,8 +46,8 @@ def build_email_body(snapshot):
         sc_row('情景1D', 'SC1D', 'W+200 | dd≥23.5% | E+2 | 1选1 → 全仓') +
         sc_row('情景2A', 'SC2A', 'W+200 | 10%≤dd<23.5% | E+ | 2选2 → 半仓') +
         sc_row('情景2D', 'SC2D', 'W+200 | dd≥23.5% | E+ | 2选2 → 全仓') +
-        sc_row('情景3A', 'SC3A', 'W+200 | dd≥5% | 5选3 → 全仓') +
-        sc_row('情景3B', 'SC3B', 'W+200 | dd<5% | E+ | 4选2 → 全仓') +
+        sc_row('情景3A', 'SC3A', 'W+200 | dd≥5% | ERP≥2.5% | 5选3(ERP≥3%) | NOT OIL_block → 全仓') +
+        sc_row('情景3B', 'SC3B', 'W+200 | dd<5% | E+ | 4选2 | NOT OIL_block → 全仓') +
         sc_row('情景4A', 'SC4A', 'dd>35% | HY>10% | V_e>80% → 全仓（30日免疫）') +
         sc_row('情景4B', 'SC4B', 'dd>50% | QE → 全仓（30日免疫）') +
         sc_row('情景4C', 'SC4C', 'dd>30% | 8<HY<12 | QE → 全仓（30日免疫）')
@@ -124,6 +124,11 @@ def build_email_body(snapshot):
             <td style="padding:6px"><b>WALCL_1000亿(13周)</b></td><td style="padding:6px">{'✓' if s.get('W1000') else '✗'}</td>
             <td style="padding:6px"><b>TLT价格</b></td><td style="padding:6px">{safe_num(s.get('tlt_price'),'.2f')}</td>
         </tr>
+        <tr>
+            <td style="padding:6px"><b>OIL原油价格(WTI)</b></td><td style="padding:6px">{safe_num(s.get('oil_price'),'.1f')}</td>
+            <td style="padding:6px"><b>OIL_block能源屏蔽</b></td>
+            <td style="padding:6px">{'⚠️ 是' if s.get('OIL_block') else '否'} (20d:{safe_num(s.get('OIL_c20'),'.1f','%')} 5y:{safe_num(s.get('OIL_pct5y'),'.0f','%')})</td>
+        </tr>
     </table>
 
     <h3 style="color:#1F3864;border-bottom:2px solid #1F3864;padding-bottom:4px">二、入场情景</h3>
@@ -143,7 +148,7 @@ def build_email_body(snapshot):
     </table>
 
     <p style="color:#999;font-size:11px;margin-top:24px;text-align:center">
-        标普500全周期交易模型监控系统 v10.1 &nbsp;|&nbsp; {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        标普500全周期交易模型监控系统 v10.3 &nbsp;|&nbsp; {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
     </p>
     </body></html>"""
     return html

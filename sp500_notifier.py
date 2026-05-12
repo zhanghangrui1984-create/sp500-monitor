@@ -166,7 +166,7 @@ def build_email_body(snapshot):
         <tr style="background:#C00000;color:white">
             <th style="padding:6px">触发器</th>
             <th style="padding:6px">物理画像</th>
-            <th style="padding:6px;width:60px">必有</th>
+            <th style="padding:6px;width:60px">达成</th>
             <th style="padding:6px;width:140px">状态</th>
             <th style="padding:6px">缺失/差距</th>
         </tr>
@@ -178,7 +178,7 @@ def build_email_body(snapshot):
         <tr style="background:#27ae60;color:white">
             <th style="padding:6px">触发器</th>
             <th style="padding:6px">物理画像</th>
-            <th style="padding:6px;width:60px">必有</th>
+            <th style="padding:6px;width:60px">达成</th>
             <th style="padding:6px;width:140px">状态</th>
             <th style="padding:6px">缺失/差距</th>
         </tr>

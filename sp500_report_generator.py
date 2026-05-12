@@ -141,7 +141,7 @@ def add_trigger_table(doc, trigger_id, trigger_name, ttype, snapshot):
     # 必有因子
     for f, v in r.get('must_have_status', []):
         is_core = (f == r.get('core_factor', ''))
-        tag = '★必有(核心)' if is_core else '必有'
+        tag = '★核心(AND)' if is_core else 'AND'
         if v is True:
             mark = '✓'; bg = 'E2EFDA'; clr = C_GREEN
         elif v is False:

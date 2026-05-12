@@ -1,6 +1,8 @@
 # ══════════════════════════════════════════════════════════════════════════
 # 标普500监控系统 v15 — 本地主程序(T1-T10 触发器版)
 # ══════════════════════════════════════════════════════════════════════════
+# v15.1 更新:本地也生成 docx 详细报告,邮件带附件
+# ══════════════════════════════════════════════════════════════════════════
 
 import os
 import json
@@ -8,11 +10,12 @@ import traceback
 from datetime import datetime
 
 from config import LOG_DIR, CURRENT_POSITION, ENTRY_SP
-from sp500_data_fetcher  import fetch_all_data
-from sp500_signal_engine import compute_signals
-from sp500_notifier      import send_email
-from sp500_cache_manager import (load_db, update_db, get_eps_signals,
-                                  db_status, backfill_eps)
+from sp500_data_fetcher    import fetch_all_data
+from sp500_signal_engine   import compute_signals
+from sp500_notifier        import send_email_with_attachment   # ★ 改为带附件版
+from sp500_report_generator import generate_report               # ★ 新增 docx 生成
+from sp500_cache_manager   import (load_db, update_db, get_eps_signals,
+                                    db_status, backfill_eps)
 
 
 def ensure_dirs():
@@ -24,11 +27,9 @@ def save_log(snapshot):
     date_str = snapshot.get('date', datetime.today().strftime('%Y-%m-%d'))
     log_path = os.path.join(LOG_DIR, f"{date_str}.json")
 
-    # 压平 triggers 为简单 dict
     clean = {}
     for k, v in snapshot.items():
         if k == 'triggers':
-            # 每个触发器只保留关键字段
             clean['triggers'] = {
                 tid: {
                     'triggered':       r.get('triggered'),
@@ -41,7 +42,7 @@ def save_log(snapshot):
                 for tid, r in v.items()
             }
         elif k == 'factors':
-            clean['factors'] = v   # 全部因子值
+            clean['factors'] = v
         elif k == 'alerts':
             clean['alerts'] = [(a, b, c) for a, b, c in v]
         elif isinstance(v, (bool, int, float, str)) or v is None:
@@ -118,7 +119,7 @@ def print_summary(snapshot):
             else:            mark = '⚪'; status = f'远未触发 {pct*100:.0f}%'
         else:
             mark = '? '; status = '数据不足'
-        print(f"  {mark} {name:25s}: {status:14s} ({n_sat}/{n_tot} 必有)")
+        print(f"  {mark} {name:25s}: {status:14s} ({n_sat}/{n_tot} 达成)")
 
     print()
     print("  ── 入场触发器 ─────────────────────────────────────────────────────")
@@ -138,7 +139,7 @@ def print_summary(snapshot):
             else:            mark = '⚪'; status = f'远未触发 {pct*100:.0f}%'
         else:
             mark = '? '; status = '数据不足'
-        print(f"  {mark} {name:25s}: {status:14s} ({n_sat}/{n_tot} 必有)")
+        print(f"  {mark} {name:25s}: {status:14s} ({n_sat}/{n_tot} 达成)")
 
     # 显示接近触发的"差什么"
     close_triggers = [(tid, name) for tid, name, _ in TRIGGER_DISPLAY
@@ -191,10 +192,17 @@ def run():
         print_summary(snapshot)
         save_log(snapshot)
 
-        print("发送邮件通知...")
-        send_email(snapshot)
+        # ★ 新增:生成 docx 详细报告
+        print("\n生成详细 docx 报告...")
+        report_path = generate_report(snapshot)
+
+        # ★ 改成带附件的邮件
+        print("发送邮件通知(含 docx 附件)...")
+        send_email_with_attachment(snapshot, report_path)
 
         print("\n✅ 本次运行完成。\n")
+        print(f"   日志:  {os.path.abspath('logs/' + snapshot['date'] + '.json')}")
+        print(f"   报告:  {os.path.abspath(report_path)}")
 
     except Exception as e:
         print(f"\n❌ 运行出错:{e}")

@@ -694,20 +694,21 @@ def evaluate_trigger(trigger_id, F):
             parts_satisfied += 1
     pct = parts_satisfied / parts_total if parts_total > 0 else 0
 
-    # 7. 缺失因子(按重要性:核心因子 > 必有 > OR > NOT)
+    # 7. 缺失因子(按重要性:核心因子 > 其他)
+    # 视角:不分 必有/OR/NOT/special_not,所有未达成的因子都列出
     missing = []
     core = cfg.get('core_factor', '')
-    # 必有里没满足的
+    # AND 因子(must_have)里没满足的
     for f, v in must_status:
         if v is False:
-            tag = '★核心' if f == core else '必有'
+            tag = '★核心' if f == core else 'AND'
             missing.append(f'{f}({tag})')
-    # OR 路径全失败的
+    # OR 路径全失败的(算作 1 个未达成因子)
     for i, path_st in enumerate(or_status_all):
         if not any(v is True for _, v in path_st):
             path_factors = ' | '.join(f'{f}={v}' for f, v in path_st)
-            missing.append(f'OR-路径{i+1}: 任一需满足({path_factors})')
-    # NOT 失效的
+            missing.append(f'OR(任一): {path_factors}')
+    # AND NOT 失效的
     for f, v in not_status:
         if v is True:
             missing.append(f'NOT({f}) 失效(当前 {f}=True)')
@@ -730,8 +731,12 @@ def evaluate_trigger(trigger_id, F):
         'or_paths_status':  or_status_all,
         'not_have_status':  not_status,
         'special_not_status': special_not_status,
-        'satisfied_count':  must_satisfied,
-        'total_must':       len(must_have),
+        # 新统一字段:AND/AND NOT/OR-block 平等计数(OR-block 算 1 个)
+        'satisfied_conditions': parts_satisfied,
+        'total_conditions':     parts_total,
+        # 旧字段保留,但语义改为"总因子数"和"满足数"(防止下游断)
+        'satisfied_count':  parts_satisfied,
+        'total_must':       parts_total,
         'satisfied_pct':    pct,
         'missing_factors':  missing,
         'unknown_factors':  unknown,

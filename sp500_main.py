@@ -16,6 +16,7 @@ from sp500_notifier        import send_email_with_attachment   # ★ 改为带�
 from sp500_report_generator import generate_report               # ★ 新增 docx 生成
 from sp500_cache_manager   import (load_db, update_db, get_eps_signals,
                                     db_status, backfill_eps)
+from sp500_factors_logger  import log_factors                     # ★ 因子历史记录
 
 
 def ensure_dirs():
@@ -171,6 +172,10 @@ def run():
     db_status()
 
     try:
+        # ★ 新增:启动引导 — 确保历史数据完整(PE 历史 + SP500 历史)
+        from sp500_db_bootstrap import bootstrap_database
+        bootstrap_database()
+
         data  = fetch_all_data()
         db    = load_db()
         sp_val= float(data['sp500_series'].iloc[-1]) if data.get('sp500_series') is not None else None
@@ -192,7 +197,10 @@ def run():
         print_summary(snapshot)
         save_log(snapshot)
 
-        # ★ 新增:生成 docx 详细报告
+        # ★ 新增:把当天因子值写入累积 csv(本地云端共享)
+        log_factors(snapshot)
+
+        # ★ 生成 docx 详细报告
         print("\n生成详细 docx 报告...")
         report_path = generate_report(snapshot)
 

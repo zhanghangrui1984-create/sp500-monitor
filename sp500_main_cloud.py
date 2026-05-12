@@ -33,6 +33,7 @@ from sp500_notifier        import send_email_with_attachment
 from sp500_report_generator import generate_report
 from sp500_cache_manager   import (load_db, update_db, get_eps_signals,
                                     db_status, backfill_eps)
+from sp500_factors_logger  import log_factors                     # ★ 因子历史记录
 
 import sp500_cache_manager
 sp500_cache_manager.DB_FILE = 'data/sp500_realtime_db.csv'
@@ -80,33 +81,15 @@ def run():
     db_status()
 
     try:
+        # ★ 启动引导:确保历史数据完整(SP500 + PE 历史回填)
+        from sp500_db_bootstrap import bootstrap_database
+        bootstrap_database()
+
         data = fetch_all_data()
 
         db    = load_db()
         sp_val= float(data['sp500_series'].iloc[-1]) if data.get('sp500_series') is not None else None
         pe_val= data.get('forward_pe')
-
-        # DB 历史不足时初始化
-        if len(db) < 42 and data.get('sp500_series') is not None:
-            print("DB 历史不足,正在初始化...")
-            import pandas as pd, numpy as np
-            sp_hist = data['sp500_series'].sort_index()
-            pe_init = pe_val or 21.0
-            hist_db = pd.DataFrame({
-                'sp500':       sp_hist,
-                'forward_pe':  pe_init,
-                'forward_eps': sp_hist / pe_init,
-            })
-            hist_db.index.name = 'date'
-            for col in ['erp','vix','nfci','hy_spread','y_spread',
-                        'fed_rate','real_rate','cpi_yoy','mfg_yoy']:
-                hist_db[col] = np.nan
-            if len(db) > 0:
-                hist_db = hist_db[~hist_db.index.isin(db.index)]
-                hist_db = pd.concat([hist_db, db]).sort_index()
-            hist_db.to_csv(sp500_cache_manager.DB_FILE)
-            db = hist_db
-            print(f"  历史DB初始化完成:{len(hist_db)}行")
 
         # 计算 EPS 信号(沿用 cache_manager)
         e_plus, e_plus2, e_minus, e_minus2 = get_eps_signals(db, sp_val, pe_val)
@@ -122,24 +105,10 @@ def run():
         update_db(snapshot, sp_val=sp_val, pe_val=pe_val, eps_val=eps_val)
         backfill_eps(pe_val)
 
-        # PE 历史回填
-        try:
-            from sp500_backfill_pe import fetch_pe_from_multpl, fetch_pe_from_gurufocus, backfill_pe_to_db
-            import sp500_cache_manager as _scm
-            import pandas as pd
-            _pe_db = pd.read_csv(_scm.DB_FILE, index_col='date', parse_dates=True)
-            _pe_unique = _pe_db['forward_pe'].dropna().nunique() if 'forward_pe' in _pe_db.columns else 0
-            if _pe_unique <= 3:
-                print("检测到 PE 历史为常数,尝试回填真实 PE...")
-                _pe_hist = fetch_pe_from_multpl() or fetch_pe_from_gurufocus()
-                if _pe_hist is not None:
-                    backfill_pe_to_db(_pe_hist)
-                    # 重新评估 P+/P-(直接重算 snapshot)
-                    snapshot = compute_signals(data)
-        except Exception as _pe_e:
-            print(f"  PE回填跳过:{_pe_e}")
-
         save_log(snapshot)
+
+        # ★ 把当天因子值写入累积 csv(会被同步到 data 分支)
+        log_factors(snapshot)
 
         print("生成详细报告...")
         report_path = generate_report(snapshot)

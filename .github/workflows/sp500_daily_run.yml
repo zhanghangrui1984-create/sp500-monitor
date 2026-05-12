@@ -1,26 +1,42 @@
 name: SP500监控每日运行
 
 # ──────────────────────────────────────────────────────────────────────
-# V15 触发器系统的云端工作流
-# 简化自 v10.3 版本 — 去掉了 data 分支持久化机制
-# (新版每次从 yfinance + FRED 拉全历史,无需跨次持久化 CSV 数据库)
+# V15+ 触发器系统的云端工作流
+#
+# 设计:
+#   main 分支:代码(不包含 data/ 和 logs/,被 .gitignore 排除)
+#   data 分支:数据持久化(只包含 data/ 和 logs/,每天 force push 一次)
+#
+# 工作流程:
+#   1. 拉 main 分支代码
+#   2. 拉 data 分支(若存在)→ 恢复历史数据库 + 历史日志
+#   3. bootstrap 自动补全缺失的历史数据
+#   4. 跑信号引擎 → 算因子 → 发邮件
+#   5. 把更新后的 data/ 和 logs/ force push 到 data 分支
 # ──────────────────────────────────────────────────────────────────────
 
 on:
   schedule:
-    # ⚠️ GitHub Actions cron 使用 UTC 时间
-    # 美东开盘 09:30 ET → 夏令时 EDT 是 UTC 13:30(北京时间 21:30)
-    #                  → 冬令时 EST 是 UTC 14:30(北京时间 22:30)
-    - cron: '30 13 * * 1-5'     # 夏季 EDT(3-11月):周一到周五,北京时间 21:30
-    # - cron: '30 14 * * 1-5'   # 冬季 EST(11月初切换后启用)
+    - cron: '30 13 * * 1-5'     # 夏季 EDT:UTC 13:30 = 北京时间 21:30 (周一到周五)
+    # - cron: '30 14 * * 1-5'   # 冬季 EST(11 月初切换后启用)
   workflow_dispatch:            # 支持在 Actions 页面手动触发
+
+permissions:
+  contents: write                # 允许 push 数据到 data 分支
 
 jobs:
   run-monitor:
     runs-on: ubuntu-latest
     steps:
-      - name: 拉取代码
+      - name: 拉取代码(main 分支)
         uses: actions/checkout@v4
+
+      - name: 拉取数据分支(data 分支历史数据库)
+        uses: actions/checkout@v4
+        with:
+          ref: data
+          path: data-branch
+        continue-on-error: true     # data 分支不存在也不报错(首次跑会自动创建)
 
       - name: 设置 Python 环境
         uses: actions/setup-python@v5
@@ -29,11 +45,23 @@ jobs:
 
       - name: 安装依赖
         run: |
-          pip install yfinance pandas numpy requests fredapi python-docx openpyxl
+          pip install yfinance pandas numpy requests fredapi python-docx openpyxl lxml
 
-      - name: 创建工作目录
+      - name: 恢复历史数据
         run: |
           mkdir -p data logs reports
+          if [ -d data-branch/data ]; then
+            cp -r data-branch/data/* data/ 2>/dev/null || true
+            echo "✅ 已恢复 data/ 目录"
+            ls -la data/
+          else
+            echo "⚠️  data 分支无数据(首次运行)"
+          fi
+          if [ -d data-branch/logs ]; then
+            cp -r data-branch/logs/* logs/ 2>/dev/null || true
+            n=$(ls logs/ 2>/dev/null | wc -l)
+            echo "✅ 已恢复 logs/ 目录($n 个文件)"
+          fi
 
       - name: 运行监控程序
         env:
@@ -41,3 +69,36 @@ jobs:
           EMAIL_ADDRESS:  ${{ secrets.EMAIL_ADDRESS }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: python sp500_main_cloud.py
+
+      - name: 推送数据到 data 分支
+        run: |
+          # 检查是否有数据可推
+          if [ ! -f data/sp500_realtime_db.csv ] && [ ! -f data/sp500_factors_history.csv ]; then
+            echo "⚠️  无数据可推送"
+            exit 0
+          fi
+
+          git config user.email "github-actions@github.com"
+          git config user.name "GitHub Actions Bot"
+
+          # 把数据复制到临时目录(防止切分支时被覆盖)
+          mkdir -p /tmp/data-sync
+          cp -r data /tmp/data-sync/ 2>/dev/null || true
+          cp -r logs /tmp/data-sync/ 2>/dev/null || true
+
+          # 切换到 data 分支(已存在则切,不存在则创建 orphan 分支)
+          git fetch origin data 2>/dev/null && \
+            git checkout -B data origin/data || \
+            git checkout --orphan data
+
+          # 清空工作树(避免代码污染 data 分支)
+          git rm -rf . 2>/dev/null || true
+
+          # 把数据复制回来
+          cp -r /tmp/data-sync/data . 2>/dev/null || true
+          cp -r /tmp/data-sync/logs . 2>/dev/null || true
+
+          git add data logs 2>/dev/null
+          git commit -m "更新数据 $(date +%Y-%m-%d)" -q || echo "无变化"
+          git push origin data --force
+          echo "✅ 已推送到 data 分支"

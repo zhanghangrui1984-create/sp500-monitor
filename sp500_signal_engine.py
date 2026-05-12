@@ -112,16 +112,21 @@ def compute_factors(data, today=None):
     F['_W200_value'] = ma200w_strict
     F['W+200'] = bool(sp_now >= ma200w_strict)
 
-    # 3) Sσ_200 = (S - MA200d) / σ(S, 200d) 用日度均线和日度 σ
+    # 3) Sσ_200 — 严格定义:
+    #    Sσ_200(t) = (S_t - MA200(t)) / σ_252(t)
+    #    σ_252(t)  = 过去 252 个交易日(S - MA200)的样本标准差(n-1, ddof=1)
+    #    注意:σ_252 是"偏离度的波动率",不是"价格的波动率",两者数值差异巨大
+    sp_ma200d = None
+    sigma_dev = 0.0
     if len(sp_s) >= 200:
-        sp_ma200d = float(sp_s.rolling(200, min_periods=200).mean().iloc[-1])
-        sp_sd200d = float(sp_s.rolling(200, min_periods=200).std(ddof=1).iloc[-1])
-        if sp_sd200d > 0:
-            sigma_dev = (sp_now - sp_ma200d) / sp_sd200d
-        else:
-            sigma_dev = 0.0
-    else:
-        sigma_dev = 0.0
+        ma200_series = sp_s.rolling(200, min_periods=200).mean()
+        sp_ma200d    = float(ma200_series.iloc[-1])
+        deviation    = sp_s - ma200_series
+        if len(deviation.dropna()) >= 252:
+            sd252 = float(deviation.rolling(252, min_periods=252).std(ddof=1).iloc[-1])
+            if sd252 > 0:
+                sigma_dev = (sp_now - sp_ma200d) / sd252
+    F['_MA200d']    = sp_ma200d
     F['Sσ_200']      = sigma_dev
     F['Sσ_200 ≤ -3σ'] = bool(sigma_dev <= -3)
     F['Sσ_200 ≤ -2σ'] = bool(sigma_dev <= -2)
@@ -129,6 +134,11 @@ def compute_factors(data, today=None):
     F['Sσ_200 ≥ +1σ'] = bool(sigma_dev >= 1)
     F['Sσ_200 ≥ +2σ'] = bool(sigma_dev >= 2)
     F['Sσ_200 ≥ +3σ'] = bool(sigma_dev >= 3)
+    # 新因子:S_t < S_200(语义 = 当日 S 小于过去 200 日 S 均值,方向性,不涉及 σ)
+    if sp_ma200d is not None:
+        F['S_t < S_200'] = bool(sp_now < sp_ma200d)
+    else:
+        F['S_t < S_200'] = None
 
     # 4) S+1/S-1(月度趋势,21 日比较)
     prev21 = val_n_ago(sp_s, 21)
@@ -534,17 +544,17 @@ TRIGGERS = {
     },
     'T9_白银坑1组': {
         'type': 'entry',
-        'description': '白银坑 1 组(广义) — 长牛中浅熊',
+        'description': '白银坑 1 组(广义) — 长牛中浅熊(v3:严格识别真坑)',
         'core_factor': 'ERP > 3%',
-        'must_have': ['W+200', 'S- ≥ 10%', 'Y+', 'N < 0', 'ERP > 3%'],
+        'must_have': ['W+200', 'S- ≥ 10%', 'Y+', 'N < 0', 'ERP > 3%', 'S_t < S_200'],
         'or_paths':  [['HY_t > 8%', 'max(V,21d) ≥ V_c+2σ', 'F+', 'E-2']],
         'not_have':  ['S- ≥ 20%', 'F-', 'CPI_y ≥ 5%'],
     },
     'T10_白银坑2组': {
         'type': 'entry',
-        'description': '白银坑 2 组(中庸态健康市场)',
-        'core_factor': 'S- ≥ 5% AND NOT(S- ≥ 20%)',
-        'must_have': ['W+200', 'S- ≥ 5%', 'S-+', 'N < 0'],
+        'description': '白银坑 2 组(中庸态健康市场,1998LTCM/1999/2023,v4:严格识别真坑)',
+        'core_factor': 'S- ≥ 10% AND NOT(S- ≥ 20%)',
+        'must_have': ['W+200', 'S- ≥ 10%', 'S-+', 'N < 0', 'S_t < S_200'],
         'or_paths':  [],
         'not_have':  ['S- ≥ 20%', 'HY_t > 8%', 'ERP > 3%', 'CPI_y ≥ 5%', 'F-'],
         # 特殊:NOT(ERP < 1.5% AND Y-)

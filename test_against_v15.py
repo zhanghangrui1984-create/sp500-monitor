@@ -25,8 +25,15 @@ from sp500_signal_engine import TRIGGERS, evaluate_trigger
 
 
 def load_v15_factor_matrix(path):
-    """从 V15 Excel 加载因子矩阵 (sheet 1_因子矩阵_59)"""
-    fm = pd.read_excel(path, sheet_name='1_因子矩阵_59', header=0)
+    """加载因子矩阵 — 自动适配 V15(59因子)和 V16(60因子)"""
+    import openpyxl
+    wb = openpyxl.load_workbook(path, read_only=True)
+    candidates = ['1_因子矩阵_60', '1_因子矩阵_59']  # V16 优先
+    sheet_name = next((s for s in candidates if s in wb.sheetnames), None)
+    wb.close()
+    if sheet_name is None:
+        raise ValueError(f"找不到因子矩阵 sheet (尝试: {candidates})")
+    fm = pd.read_excel(path, sheet_name=sheet_name, header=0)
     fm['date'] = pd.to_datetime(fm['date'])
     return fm
 
@@ -89,17 +96,15 @@ def evaluate_triggers_on_v15(fm, inter=None):
 
     返回: dict {trigger_id: list of triggered dates}
 
-    注意:V15 矩阵的 'S-' 列是 0/1 (是否回撤),不是回撤数值。
-    所以 S- ≥ 5% 不能从矩阵的 'S-' 列重算 — 必须用中间量的 S_drawdown_pct。
+    注意:
+    - V15 矩阵的 'S-' 列是 0/1 (是否回撤),不是回撤数值
+    - V16 矩阵用列名 'Sσ_200 < 0',V17 矩阵改为 'S_t < S_200'(数学等价)
+    - 引擎统一用 'S_t < S_200',如遇 V16 矩阵自动建别名
     """
-    if 'S- ≥ 5%' not in fm.columns:
-        if inter is not None and 'S_drawdown_pct' in inter.columns:
-            fm = fm.copy()
-            inter_aligned = inter.set_index('date').reindex(fm['date'])
-            fm['S- ≥ 5%'] = (inter_aligned['S_drawdown_pct'].values >= 0.05).astype(int)
-        else:
-            print("⚠️ 没有提供中间量,且 V15 矩阵中无 S- ≥ 5% 列;无法验证 T10")
-            fm['S- ≥ 5%'] = 0
+    # 兼容 V16:把 'Sσ_200 < 0' 别名为 'S_t < S_200'(语义等价)
+    if 'Sσ_200 < 0' in fm.columns and 'S_t < S_200' not in fm.columns:
+        fm = fm.copy()
+        fm['S_t < S_200'] = fm['Sσ_200 < 0']
 
     def s(col):
         return fm[col].astype(int).values
@@ -127,14 +132,18 @@ def evaluate_triggers_on_v15(fm, inter=None):
                         s('WALCL+ ≥ 1000hm') & (s('P-') | s('ERP > 3%')))
     T['T8_2022入场']  = (s('S- ≥ 20%') & s('S-6') & s('F+') & s('CPI_y ≥ 7%') &
                         s('E-2') & s('ERP > 3%') & s('N < 0'))
-    T['T9_白银坑1组'] = ((s('W+200') & s('S- ≥ 10%') & s('Y+') & s('N < 0') & s('ERP > 3%')) &
+    # T9 v3: 新增 S_t < S_200
+    T['T9_白银坑1组'] = (s('W+200') & s('S- ≥ 10%') & s('Y+') & s('N < 0') & s('ERP > 3%') &
                         (s('HY_t > 8%') | s('max(V,21d) ≥ V_c+2σ') |
                          s('F+') | s('E-2')) &
-                        NOT(s('S- ≥ 20%')) & NOT(s('F-')) & NOT(s('CPI_y ≥ 5%')))
-    T['T10_白银坑2组']= (s('W+200') & s('S- ≥ 5%') & NOT(s('S- ≥ 20%')) & s('S-+') &
+                        NOT(s('S- ≥ 20%')) & NOT(s('F-')) & NOT(s('CPI_y ≥ 5%')) &
+                        s('S_t < S_200'))
+    # T10 v4: 新增 S_t < S_200
+    T['T10_白银坑2组']= (s('W+200') & s('S- ≥ 10%') & NOT(s('S- ≥ 20%')) & s('S-+') &
                         s('N < 0') & NOT(s('HY_t > 8%')) & NOT(s('ERP > 3%')) &
                         NOT(s('CPI_y ≥ 5%')) & NOT(s('F-')) &
-                        NOT(s('ERP < 1.5%') & s('Y-')))
+                        NOT(s('ERP < 1.5%') & s('Y-')) &
+                        s('S_t < S_200'))
 
     result = {}
     for tid, arr in T.items():

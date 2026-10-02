@@ -1,0 +1,228 @@
+{
+  "date": "2026-06-03",
+  "sp500": 7569.11,
+  "sp_dd_pct": 0.53,
+  "ma200w": 5298.41,
+  "sigma_dev_200": 3.4,
+  "vix": 16.14,
+  "V_c": 18.1,
+  "V_c_sigma": 3.29,
+  "y_spread": 0.41,
+  "fed_rate": 3.62,
+  "real_rate": null,
+  "hy_spread": 2.71,
+  "hy_c21": -0.06,
+  "nfci": null,
+  "n_c": null,
+  "n_c_mu": null,
+  "n_c_sigma": null,
+  "forward_pe": 28.38,
+  "pe_avg": 25.1,
+  "erp": null,
+  "cpi_y": 3.95,
+  "oil_price": null,
+  "oil_c21": null,
+  "oil_pct5y": null,
+  "walcl_13w_chg": null,
+  "factors": {
+    "S- ≥ 5%": false,
+    "S- ≥ 10%": false,
+    "S- ≥ 20%": false,
+    "S- ≥ 30%": false,
+    "S-": 0.005344428225680244,
+    "W+200": true,
+    "Sσ_200": 3.399640603656138,
+    "Sσ_200 ≤ -3σ": false,
+    "Sσ_200 ≤ -2σ": false,
+    "Sσ_200 ≤ -1σ": false,
+    "Sσ_200 ≥ +1σ": true,
+    "Sσ_200 ≥ +2σ": true,
+    "Sσ_200 ≥ +3σ": true,
+    "S_t < S_200": false,
+    "S+1": true,
+    "S-1": false,
+    "S+6": true,
+    "S-6": false,
+    "S-+": false,
+    "V ≤ V_c": true,
+    "V < MA(V,21)": true,
+    "max(V,21d) ≥ V_c+2σ": false,
+    "V ≤ V_c-1σ": false,
+    "V ≥ V_c+1σ": false,
+    "V ≥ V_c+2σ": false,
+    "V ≥ V_c+3σ": false,
+    "V ≤ MA(V,21)-1σ_21d": false,
+    "V ≥ MA(V,21)+1σ_21d": false,
+    "V ≥ MA(V,21)+2σ_21d": false,
+    "V ≥ MA(V,21)+3σ_21d": false,
+    "N > 0": null,
+    "N < 0": null,
+    "N+ ≥ μ+1σ": null,
+    "N+ ≥ μ+2σ": null,
+    "N- ≥ μ+1σ": null,
+    "N- ≥ μ+2σ": null,
+    "F+": false,
+    "F-": false,
+    "Y+": true,
+    "Y-": false,
+    "WALCL+ ≥ 500hm": false,
+    "WALCL+ ≥ 1000hm": false,
+    "HY_t > 8%": false,
+    "HY_c21 > 0": false,
+    "HY_c21 ≤ 0": true,
+    "HY_t < HY_m21": true,
+    "P-": false,
+    "P+": true,
+    "ERP > 3%": null,
+    "ERP < 1.5%": null,
+    "ERP < 0": null,
+    "CPI_y < 0%": false,
+    "CPI_y ≥ 5%": false,
+    "CPI_y ≥ 7%": false,
+    "E+": true,
+    "E+2": false,
+    "E-": false,
+    "E-2": false,
+    "OIL_c21 ≥ μ+1σ": null,
+    "OIL_c21 ≥ μ+2σ": null,
+    "OIL_pct5y > 85%": null
+  },
+  "triggers": {
+    "T1_2000离场": {
+      "triggered": null,
+      "satisfied_pct": 0.2857142857142857,
+      "satisfied_count": 2,
+      "total_must": 7,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "F+(AND)",
+        "Y-(AND)",
+        "HY_c21 > 0(AND)"
+      ]
+    },
+    "T2_2007离场": {
+      "triggered": null,
+      "satisfied_pct": 0.5714285714285714,
+      "satisfied_count": 4,
+      "total_must": 7,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "E-2(AND)",
+        "F-(AND)"
+      ]
+    },
+    "T3_2015离场": {
+      "triggered": null,
+      "satisfied_pct": 0.42857142857142855,
+      "satisfied_count": 3,
+      "total_must": 7,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "E-2(AND)",
+        "CPI_y < 0%(★核心)"
+      ]
+    },
+    "T4_2022离场": {
+      "triggered": false,
+      "satisfied_pct": 0.6,
+      "satisfied_count": 3,
+      "total_must": 5,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "CPI_y ≥ 5%(★核心)",
+        "OR(任一): WALCL+ ≥ 500hm=False | ERP < 0=None | N- ≥ μ+1σ=None | F+=False | N > 0=None"
+      ]
+    },
+    "T5_2002入场": {
+      "triggered": null,
+      "satisfied_pct": 0.25,
+      "satisfied_count": 2,
+      "total_must": 8,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "S-6(AND)",
+        "S- ≥ 30%(AND)",
+        "Sσ_200 ≤ -3σ(AND)",
+        "V ≥ V_c+3σ(AND)"
+      ]
+    },
+    "T6_2009入场": {
+      "triggered": null,
+      "satisfied_pct": 0.0,
+      "satisfied_count": 0,
+      "total_must": 7,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "S-6(AND)",
+        "S- ≥ 30%(AND)",
+        "Sσ_200 ≤ -3σ(AND)",
+        "V ≥ V_c+3σ(AND)",
+        "HY_t > 8%(★核心)",
+        "WALCL+ ≥ 1000hm(AND)"
+      ]
+    },
+    "T7_2020入场": {
+      "triggered": false,
+      "satisfied_pct": 0.0,
+      "satisfied_count": 0,
+      "total_must": 5,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "Sσ_200 ≤ -3σ(AND)",
+        "V ≥ V_c+3σ(AND)",
+        "HY_t > 8%(AND)",
+        "WALCL+ ≥ 1000hm(★核心)",
+        "OR(任一): P-=False | ERP > 3%=None"
+      ]
+    },
+    "T8_2022入场": {
+      "triggered": null,
+      "satisfied_pct": 0.0,
+      "satisfied_count": 0,
+      "total_must": 7,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "S- ≥ 20%(AND)",
+        "S-6(AND)",
+        "F+(AND)",
+        "CPI_y ≥ 7%(★核心)",
+        "E-2(AND)"
+      ]
+    },
+    "T9_白银坑1组": {
+      "triggered": false,
+      "satisfied_pct": 0.5,
+      "satisfied_count": 5,
+      "total_must": 10,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "S- ≥ 10%(AND)",
+        "S_t < S_200(AND)",
+        "OR(任一): HY_t > 8%=False | max(V,21d) ≥ V_c+2σ=False | F+=False | E-2=False"
+      ]
+    },
+    "T10_白银坑2组": {
+      "triggered": null,
+      "satisfied_pct": 0.5454545454545454,
+      "satisfied_count": 6,
+      "total_must": 11,
+      "alert": "⚪ 远未触发",
+      "missing_factors": [
+        "S- ≥ 10%(AND)",
+        "S-+(AND)",
+        "S_t < S_200(AND)"
+      ]
+    }
+  },
+  "alerts": [],
+  "T1_2000离场": null,
+  "T2_2007离场": null,
+  "T3_2015离场": null,
+  "T4_2022离场": false,
+  "T5_2002入场": null,
+  "T6_2009入场": null,
+  "T7_2020入场": false,
+  "T8_2022入场": null,
+  "T9_白银坑1组": false,
+  "T10_白银坑2组": null
+}

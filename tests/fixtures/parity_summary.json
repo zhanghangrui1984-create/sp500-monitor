@@ -1,0 +1,130 @@
+{
+  "model_version": "hybrid-pe-split-financial-exit-v17-20261016",
+  "historical_sessions": 7841,
+  "active_factors": 20,
+  "all_trigger_dates_match": true,
+  "market_raw_input_parity": {
+    "S": {
+      "mismatched_days": 0,
+      "max_abs_difference": 0.0
+    },
+    "MA200": {
+      "mismatched_days": 0,
+      "max_abs_difference": 9.094947017729282e-13
+    },
+    "Sσ_200": {
+      "mismatched_days": 0,
+      "max_abs_difference": 8.881784197001252e-16
+    },
+    "S_lag_126": {
+      "mismatched_days": 0,
+      "max_abs_difference": 0.0
+    },
+    "S_dn_126": {
+      "mismatched_days": 0,
+      "max_abs_difference": 0.0
+    },
+    "V": {
+      "mismatched_days": 0,
+      "max_abs_difference": 0.0
+    },
+    "V_c": {
+      "mismatched_days": 0,
+      "max_abs_difference": 3.552713678800501e-15
+    },
+    "V_c_sd": {
+      "mismatched_days": 0,
+      "max_abs_difference": 8.881784197001252e-16
+    },
+    "S_drawdown_pct": {
+      "mismatched_days": 0,
+      "max_abs_difference": 9.974659986866641e-17
+    },
+    "DD_P95": {
+      "mismatched_days": 0,
+      "max_abs_difference": 9.71445146547012e-17
+    },
+    "DD_P99": {
+      "mismatched_days": 0,
+      "max_abs_difference": 8.326672684688674e-17
+    },
+    "sample_count": {
+      "mismatched_days": 0,
+      "max_abs_difference": 0.0
+    },
+    "FSX": {
+      "mismatched_days": 0,
+      "max_abs_difference": 9.8879238130678e-17
+    },
+    "NSX": {
+      "mismatched_days": 0,
+      "max_abs_difference": 2.220446049250313e-16
+    },
+    "CYCDEF_change_pct": {
+      "mismatched_days": 0,
+      "max_abs_difference": 3.552713678800501e-15
+    }
+  },
+  "full_factor_event_checks": [
+    {
+      "date": "1998-08-31",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2000-04-24",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2002-07-10",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2007-09-19",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2007-09-26",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2009-02-11",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2015-02-20",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2015-08-24",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2020-03-23",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2020-04-29",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2020-06-15",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2021-11-29",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2022-10-10",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2026-01-28",
+      "all_20_raw_factors_match": true
+    },
+    {
+      "date": "2026-02-27",
+      "all_20_raw_factors_match": true
+    }
+  ]
+}

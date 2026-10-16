@@ -1,0 +1,405 @@
+{
+  "version": "hybrid-pe-split-financial-exit-v17-20261016",
+  "start": "1995-01-03",
+  "end": "2026-02-27",
+  "capital": 1000000,
+  "cost_bps": 5,
+  "initial_position": "cash",
+  "execution": "next_session_close",
+  "conflict": "exit_priority",
+  "missing": "hold",
+  "source_timing": {
+    "N": "observation Friday + 5 days; Thursday if federal holiday Mon-Wed; morning release",
+    "WALCL": "Wednesday observation; next federal business day 16:30 release; next equity session usable",
+    "CPI": "next month day 20, next federal business day; simulated monthly schedule",
+    "OIL": "weekly Wednesday release with data through preceding Tuesday; federal holiday rolls forward; simulate this current EIA webpage cadence",
+    "HY": "one equity session after observation; simulated daily availability",
+    "S_V_Y_F": "observation date close",
+    "PE_EPS_ERP": "FactSet publication-week first; missing historical week uses last completed Fed month; next-week first session; 4/8-week EPS and 260-week PE",
+    "NSX": "NDX and SPX same-session close; 252-session relative return; available after close; trade next-session close",
+    "FSX": "XLF/SPY adjusted-close 252-session relative return; after close; next-session execution",
+    "FCS": "Paired daily CP-Tbill spread averaged W-FRI; at least 3 valid days; database simulated effective session; carry no longer than 14 calendar days from source week end",
+    "FSX63": "Mean of exactly previous 63 sessions of FSX; exclude today; available before current session; missing stays unknown.",
+    "ERX": "Monthly CFNAIDIFF current revised vintage; historical simulated release next month 28th; first NYSE session strictly after release; carry latest available month, including missing values. Future real release dates must be recorded in database.",
+    "HPG": "Monthly PERMIT current revised vintage; stored simulated release next month day 20; first equity session strictly after publication. Carry latest publication, including missing values. Future actual release dates must be recorded.",
+    "NFCI_26w_up": "Weekly current observation minus26weeks earlier; existing simulated Fed release calendar; same-day morning release available at close; missing publication invalidates stale data.",
+    "DEFENSE": "Six adjusted ETF closes; geometric cyclical/defensive ratio versus126equitysessions earlier; after close, next-session execution. No fill or compressed calendar.",
+    "dynamic_drawdown": "At session t, use only completed ATH-recovery episodes known through previous actual session; peak date >=1975-01-01. Equal-weight Type7 P95/P99. Today close evaluated against precomputed thresholds; execution next-session close."
+  },
+  "release_parameters": {
+    "nfci_lag_days": 5,
+    "nfci_federal_holiday_delay": true,
+    "oil_release_weekday": 2,
+    "hy_delay_sessions": 1,
+    "cpi_next_month_day": 20,
+    "walcl_observation_to_release_days": 1,
+    "walcl_after_close": true,
+    "bft_lag_days": 165
+  },
+  "parameters": {
+    "price_ma": 200,
+    "deviation_std": 252,
+    "weekly_ma": 200,
+    "month_sessions": 21,
+    "six_month_sessions": 126,
+    "up_days_month": 11,
+    "up_days_six_months": 61,
+    "five_year_sessions": 1260,
+    "fed_ma_sessions": 252,
+    "fed_band_pp": 0.25,
+    "nfci_change_sessions": 20,
+    "vix_calm_lookback": 252,
+    "vix_calm_min_samples": 63,
+    "vix_calm_drawdown": 0.1,
+    "walcl_thresholds_trillion": [
+      0.05,
+      0.1
+    ],
+    "walcl_valid_months": [
+      2,
+      3
+    ]
+  },
+  "triggers": [
+    {
+      "name": "统一离场",
+      "side": "exit",
+      "all": [
+        "NFCI_26w_up",
+        "DEFENSE",
+        "P+",
+        {
+          "any": [
+            {
+              "all": [
+                "Y-",
+                "NSX ≥ 40%"
+              ]
+            },
+            "CPI_y < 0%",
+            "CPI_y ≥ 5.39%"
+          ]
+        }
+      ],
+      "meaning": "金融条件相对收紧、周期板块相对走弱且估值偏高，再由科技、物价下降或高通胀情景确认。",
+      "definition_document": "docs/独立金融离场与三情景统一模型_v17_20261016.md",
+      "factor_meanings": {
+        "NFCI_26w_up": "最新已公布NFCI周值高于26周前原生周值，差值严格>0；表示金融条件相对半年前收紧。不要求NFCI>0，也不要求每周连续上升。缺失周不跳过，按既定发布日对齐。",
+        "DEFENSE": "周期／防御板块比值较126交易日前下降，变化率严格<0。周期组为XLY、XLI、XLB，防御组为XLP、XLV、XLU；各组用归一化复权收盘价的几何平均。表示周期板块相对走弱，不要求绝对价格下跌。",
+        "P+": "最新可用未来12个月预期PE > 最近260个原生周PE的均值＋1个样本标准差，窗口含当周；表示估值相对自身近五年偏高。FactSet优先，缺周按既定美联储完整月数据补缺，按发布规则生效。",
+        "Y-": "10年期美国国债收益率−2年期美国国债收益率严格<0，表示收益率曲线倒挂；按同日可用收盘值判断。",
+        "NSX ≥ 40%": "NSX=(当日NDX/SPX)÷(252交易日前NDX/SPX)−1；至少40%成立。衡量纳指100相对标普500的比值涨幅，不是两指数涨幅相减40个百分点。",
+        "CPI_y < 0%": "最新已发布总体CPI同比严格<0%；表示总体物价低于去年同期，不等同于全面持续通缩。采用CPIAUCSL总体CPI，非核心CPI、非环比。",
+        "CPI_y ≥ 5.39%": "最新已发布总体CPI同比≥5.39%，等号成立；识别既定高通胀档位。5.39为已采用的固定CPI分界，本次没有重新估计。"
+      },
+      "replaces": [
+        "2000离场",
+        "2015离场",
+        "2022离场"
+      ]
+    },
+    {
+      "name": "2007离场",
+      "side": "exit",
+      "all": [
+        "NFCI_4w_down",
+        "FSX ≤ -10%",
+        "FCS ≥ 1.00pp"
+      ],
+      "meaning": "金融板块相对走弱且融资利差偏高时，等待NFCI相对四周前回落后退出。",
+      "definition_document": "docs/独立金融离场与三情景统一模型_v17_20261016.md",
+      "factor_meanings": {
+        "NFCI_4w_down": "最新已公布NFCI周值严格低于同一原生周序列4周前的值；比较端点，不要求连续下降，不要求NFCI>0。按三位小数整数差<0判断，相等不成立，任一端缺失为未知。沿用既定周度发布时间，不用20个交易日代替4周。",
+        "FSX ≤ -10%": "FSX=(当日XLF复权收盘/SPY复权收盘)÷(252交易日前同一比值)−1；≤−10%成立。表示金融板块相对大盘明显走弱，不是金融股绝对跌幅10%。",
+        "FCS ≥ 1.00pp": "3个月AA金融商业票据利率DCPF3M−3个月国库券利率DTB3；同日报价配对后按周五结束的一周求均值，至少3个有效日。周均≥1.00个百分点即100基点成立，表示短期金融融资风险溢价偏高。"
+      }
+    },
+    {
+      "name": "深跌修复入场",
+      "side": "entry",
+      "all": [
+        "S-6",
+        "S- ≥ P99",
+        "V ≥ V_c+3σ",
+        {
+          "any": [
+            "NFR ≥ 0.958",
+            "ERX达标"
+          ]
+        }
+      ],
+      "replaces": [
+        "2002入场",
+        "2009入场"
+      ],
+      "meaning": "股市处于中期下跌、较历史最高收盘价回撤达到当天P99、极端恐慌的环境，同时金融条件或整体经济至少有一方面出现明显修复。描述修复中的入场机会，不保证最终底部已出现。",
+      "factor_meanings": {
+        "S-6": "标普收盘价低于126个交易日前，且最近126个交易日中至少61天下跌；表示中期下跌，不要求连续六个月下跌。",
+        "V ≥ V_c+3σ": "当日VIX≥平静期VIX均值＋3倍样本标准差。平静日为标普历史回撤<10%；取最近252个交易日内的平静样本，不足63个则向前取最近63个平静样本；不足63个为未知。",
+        "NFR ≥ 0.958": "NFR为NFCI修复幅度，衡量金融条件较过去一年最紧时改善了多少。NFCI越高表示金融条件越紧；NFR越大表示近期压力缓解越多，不要求当期NFCI高于或低于零。 NFR＝当周及此前51个连续周NFCI最高值−当周NFCI。Ⅱ档≥0.958点；Ⅰ档≥0.634点保留为研究分档。",
+        "ERX达标": "ERX为经济修复幅度，使用芝加哥联储CFNAI扩散指数CFNAIDIFF，衡量整体经济活动较近三年低谷改善了多少；不是工业生产指数，也不是股价反弹幅度。 L＝当月及此前35个连续月CFNAIDIFF最低值；ERX＝当月CFNAIDIFF−L。L≤−0.27且ERX≥0.50点同时满足才达标。",
+        "S- ≥ P99": "当日历史高点回撤≥当天P99。P99只使用前一交易日及以前已恢复前高的完整回撤轮次，不使用当日或未来价格。"
+      },
+      "definition_document": "docs/动态价格分界正式模型_v14_20261016.md",
+      "logic": "Three market predicates AND (NFR tier II OR ERX qualified); inclusive OR; no year filter"
+    },
+    {
+      "name": "2022入场",
+      "side": "entry",
+      "display_name": "高通胀回撤入场",
+      "all": [
+        "P95 ≤ S- < P99",
+        "CPI_y ≥ 5.39%",
+        "E-2",
+        "N < 0"
+      ],
+      "meaning": "股价处于当天P95至P99的中等回撤区间，高通胀与盈利预期下修同时存在，但金融条件仍比长期平均宽松；四项共同识别这一环境下的入场机会，不要求通胀已经下降或盈利预期开始上调。",
+      "definition_document": "docs/动态价格分界正式模型_v14_20261016.md",
+      "factor_meanings": {
+        "CPI_y ≥ 5.39%": "最新可用总体CPI季调同比≥5.39%，含等号；与高通胀离场共用Ⅰ档门槛，不要求同比已经回落。",
+        "E-2": "最新可用预测EPS＜4周前预测EPS＜8周前预测EPS；3个端点连续下调，不要求每周都下调。",
+        "N < 0": "最新可用NFCI严格小于0，表示金融条件比长期平均宽松；不表示金融条件正在改善。",
+        "P95 ≤ S- < P99": "S−为当日收盘相对历史最高收盘的回撤。P95/P99由截至前一交易日已完成的1975年起回撤轮次等权线性分位计算，采用完整精度；下界含等号，上界不含。"
+      },
+      "combination_logic": "四项AND；没有年份限制。无仓时次交易日收盘满仓，成本0.05%；离场优先；未知沿用既定hold处理。",
+      "replaces_condition_set": "original_seven_conditions"
+    },
+    {
+      "name": "白银坑入场",
+      "side": "entry",
+      "all": [
+        "P95 ≤ S- < P99",
+        "HPG > 0",
+        "V ≥ V_c+3σ",
+        "Sσ_200 ≤ -2σ",
+        {
+          "not": "CPI_y ≥ 5.39%"
+        }
+      ],
+      "replaces": [
+        "白银坑1组",
+        "白银坑2组"
+      ],
+      "meaning": "价格处于当天P95至P99的中等回撤区间，出现极端恐慌与明显超跌，同时住宅建设意向同比仍增长、通胀低于5.39%；五项共同识别经济仍有支撑时的中等危机入场机会。",
+      "definition_document": "docs/动态价格分界正式模型_v14_20261016.md",
+      "combination_logic": "五项AND；无仓时次交易日收盘满仓；不限制年份；不存在42交易日冷却条件。",
+      "factor_meanings": {
+        "P95 ≤ S- < P99": "S−为当日收盘相对历史最高收盘的回撤。P95/P99由截至前一交易日已完成的1975年起回撤轮次等权线性分位计算，采用完整精度；下界含等号，上界不含。"
+      }
+    }
+  ],
+  "pe_mode": "factset_first_fed_monthly",
+  "historical_pe_fallback_end": "2026-02-27",
+  "nsx": {
+    "source_sheet": "NSX 纳指超涨",
+    "lookback_sessions": 252,
+    "threshold": 0.4,
+    "factor_name": "NSX ≥ 40%"
+  },
+  "financial_factors": {
+    "fsx_sheet": "FSX 金股相对强弱",
+    "fcs_sheet": "FCS 金融融资利差",
+    "fcs_weekly_sheet": "FCS 周度汇总",
+    "lookback_sessions": 252,
+    "fsx_threshold": -0.1,
+    "fcs_threshold_pp": 1.0,
+    "min_weekly_quotes": 3,
+    "max_age_calendar_days": 14,
+    "fsx_factor_name": "FSX ≤ -10%",
+    "fcs_factor_name": "FCS ≥ 1.00pp"
+  },
+  "fsx63": {
+    "source_sheet": "FSX63 金股前期强弱",
+    "lookback_sessions": 63,
+    "threshold": -0.1,
+    "factor_name": "FSX63 ≥ -10%"
+  },
+  "erx": {
+    "source_sheet": "ERX 经济修复",
+    "window_months": 36,
+    "low_threshold": -0.27,
+    "rebound_threshold": 0.5,
+    "factor_name": "ERX达标"
+  },
+  "nfr": {
+    "source_sheet": "NFR NFCI修复幅度",
+    "window_weeks": 52,
+    "tier1": 0.634,
+    "tier2": 0.958,
+    "tier1_factor_name": "NFR ≥ 0.634",
+    "tier2_factor_name": "NFR ≥ 0.958"
+  },
+  "unified_recovery_entry": {
+    "name": "深跌修复入场",
+    "replaces": [
+      "2002入场",
+      "2009入场"
+    ],
+    "definition_document": "docs/动态价格分界正式模型_v14_20261016.md",
+    "future_online_required": true,
+    "online_implementation_status": "deferred_by_user",
+    "drawdown_factor": "S- ≥ P99"
+  },
+  "silver_pit_entry": {
+    "drawdown_lower": 0.0808,
+    "drawdown_upper": 0.2588,
+    "factor_name": "8.08% ≤ S- < 25.88%",
+    "name": "白银坑入场",
+    "replaces": [
+      "白银坑1组",
+      "白银坑2组"
+    ],
+    "definition_document": "docs/动态价格分界正式模型_v14_20261016.md",
+    "adopted_on": "2026-10-09",
+    "condition_set": "hpg_five_conditions",
+    "future_online_required": true,
+    "online_implementation_status": "deferred_by_user",
+    "active_drawdown_factor": "P95 ≤ S- < P99",
+    "legacy_fixed_factor_retained": true
+  },
+  "hpg": {
+    "source_sheet": "HPG 住宅许可增长率",
+    "threshold": 0,
+    "factor_name": "HPG > 0",
+    "release_basis": "next_month_day20_proxy",
+    "definition_document": "docs/白银坑统一入场_HPG五项_v9_20261009.md"
+  },
+  "exit_2015": {
+    "name": "2015离场",
+    "condition_set": "common_four_conditions",
+    "adopted_on": "2026-10-15",
+    "formula": "P＋＋CPI同比＜0＋NFCI高于半年前＋周期／防御板块比值低于半年前",
+    "removed_conditions": [
+      "W+200",
+      "E-2"
+    ],
+    "definition_document": "docs/共同离场三情景_v11_20261015.md",
+    "future_online_required": true,
+    "online_implementation_status": "deferred_by_user"
+  },
+  "database": "outputs/split_financial_exit_v17_20261016/标普500历史数据库_v31_独立金融离场_20261016.xlsx",
+  "common_exit_factors": {
+    "nfci_sheet": "N 流动性NFCI",
+    "nfci_weeks": 26,
+    "sector_sheet": "CYCDEF 板块相对强弱",
+    "sector_sessions": 126,
+    "nfci_factor_name": "NFCI_26w_up",
+    "sector_factor_name": "DEFENSE",
+    "definition_document": "docs/共同离场三情景_v11_20261015.md"
+  },
+  "cpi_thresholds": {
+    "high_pp": 5.39,
+    "high_factor_name": "CPI_y ≥ 5.39%",
+    "upper_pp": 7.27,
+    "upper_factor_name": "CPI_y ≥ 7.27%",
+    "definition_document": "docs/高通胀入场四因子正式模型_v13_20261015.md",
+    "thresholds_fixed": true,
+    "auto_reestimate": false,
+    "source_series": "CPIAUCSL",
+    "source_url": "https://fred.stlouisfed.org/data/CPIAUCSL",
+    "adopted_on": "2026-10-15",
+    "high_status": "active_shared_boundary",
+    "upper_status": "recorded_factor_not_yet_used_in_formal_trigger",
+    "scope": "5.39%用于高通胀离场、高通胀回撤入场及白银入场反向条件；7.27%保存为研究Ⅱ档，未用于正式触发。"
+  },
+  "entry_2022": {
+    "name": "2022入场",
+    "condition_set": "high_inflation_four_conditions",
+    "adopted_on": "2026-10-15",
+    "formula": "P95≤S−<P99 ＋ CPI同比≥5.39% ＋ E−2 ＋ NFCI＜0",
+    "definition_document": "docs/动态价格分界正式模型_v14_20261016.md",
+    "replaced_factors": [
+      "S- ≥ 20%",
+      "S-6",
+      "F+",
+      "CPI_y ≥ 7%",
+      "E-2",
+      "ERP > 3%",
+      "N < 0"
+    ],
+    "drawdown_factor": "P95 ≤ S- < P99",
+    "cpi_factor": "CPI_y ≥ 5.39%",
+    "eps_factor": "E-2",
+    "nfci_factor": "N < 0",
+    "future_online_required": true,
+    "online_implementation_status": "deferred_by_user"
+  },
+  "dynamic_drawdown": {
+    "episode_start": "1975-01-01",
+    "min_episodes": 100,
+    "probabilities": [
+      0.95,
+      0.99
+    ],
+    "half_life_years": null,
+    "estimator": "equal_weight_linear_type7",
+    "price_sheet": "S 标普500价格指数",
+    "input_cutoff": "previous_actual_session_close",
+    "attention_factor": "S- ≥ P95",
+    "middle_factor": "P95 ≤ S- < P99",
+    "deep_factor": "S- ≥ P99",
+    "definition_document": "docs/动态价格分界正式模型_v14_20261016.md",
+    "adopted_on": "2026-10-16"
+  },
+  "unified_exit": {
+    "name": "统一离场",
+    "adopted_on": "2026-10-16",
+    "definition_document": "docs/独立金融离场与三情景统一模型_v17_20261016.md",
+    "formula": "NFCI高于26周前 AND DEFENSE AND P+ AND [(Y− AND NSX≥40%) OR CPI同比<0% OR CPI同比≥5.39%]",
+    "shared_conditions": [
+      "NFCI_26w_up",
+      "DEFENSE",
+      "P+"
+    ],
+    "scenarios": [
+      {
+        "id": "2000离场",
+        "display_name": "科技（2000）",
+        "or_choices": [
+          0
+        ],
+        "extra": "Y− AND NSX≥40%"
+      },
+      {
+        "id": "2015离场",
+        "display_name": "物价下降（2015）",
+        "or_choices": [
+          1
+        ],
+        "extra": "CPI同比<0%"
+      },
+      {
+        "id": "2022离场",
+        "display_name": "高通胀（2021）",
+        "or_choices": [
+          2
+        ],
+        "extra": "CPI同比≥5.39%"
+      }
+    ],
+    "scenario_semantics": "三个诊断分支从统一离场执行表达式推导。2007金融信用离场独立执行；两类离场之间为OR，均不限制年份。",
+    "replaces": [
+      "2000离场",
+      "2015离场",
+      "2022离场"
+    ],
+    "future_online_required": true,
+    "online_implementation_status": "deferred_by_user"
+  },
+  "nfci_short_decline": {
+    "source_sheet": "N 流动性NFCI",
+    "lookback_weeks": 4,
+    "factor_name": "NFCI_4w_down",
+    "definition_document": "docs/独立金融离场与三情景统一模型_v17_20261016.md"
+  },
+  "financial_exit": {
+    "name": "2007离场",
+    "formula": "NFCI低于4周前 AND FSX≤−10% AND FCS≥1.00个百分点",
+    "definition_document": "docs/独立金融离场与三情景统一模型_v17_20261016.md",
+    "adopted_on": "2026-10-16",
+    "independent": true,
+    "year_restriction": null,
+    "future_online_required": true,
+    "online_implementation_status": "deferred_by_user"
+  }
+}

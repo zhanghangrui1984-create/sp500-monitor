@@ -7,7 +7,7 @@ import pandas as pd
 import exchange_calendars as xc
 from .sources import BASE,DATA,MACROS,collect,factset,write_json
 from .calculator import CONFIG,market_features,pe_weekly,evaluate
-from .report import clean,render,send
+from .report import clean,render,send,delivery_key
 
 def expression(node):
     if isinstance(node,str):return node
@@ -111,8 +111,11 @@ def main():
     write_json(DATA/'latest_report.json',r)
     daykey=datetime.now(timezone.utc).strftime('%Y-%m-%d')
     write_json(DATA/'daily'/f'{daykey}.json',r)
-    key=datetime.now(timezone.utc).strftime('%Y-%m-%d')+'_'+CONFIG['version']+'_'+r['status']
+    key=delivery_key(r,daykey)
     sentfile=DATA/'mail_receipts.json';sent=json.loads(sentfile.read_text(encoding='utf8')) if sentfile.exists() else {}
+    oldkey=daykey+'_'+CONFIG['version']+'_'+r['status']
+    if not a.no_email and key not in sent and oldkey in sent and r['asof'] in sent[oldkey].get('subject',''):
+        sent[key]=sent[oldkey];write_json(sentfile,sent)
     if not a.no_email and key not in sent:
         try:
             receipt=send(r,body);receipt['sent_at']=datetime.now(timezone.utc).isoformat();sent[key]=receipt

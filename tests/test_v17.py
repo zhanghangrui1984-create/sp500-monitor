@@ -7,10 +7,18 @@ from monitor_v17.shared_core import triggers_from_factors
 from model.dynamic_drawdown import DrawdownThresholdState
 from model.inventory_exit import weekly
 from model.financial_factors import calculate_fcs,weekly_fcs,align_fcs
+from monitor_v17.report import delivery_key
 
 BASE=Path(__file__).resolve().parents[1]
 
 class ContractTests(unittest.TestCase):
+    def test_new_market_close_is_not_suppressed_by_same_day_manual_test(self):
+        old={'model_version':'v17','status':'ok','asof':'2026-10-15'}
+        new=dict(old,asof='2026-10-16')
+        self.assertNotEqual(delivery_key(old,'2026-10-16'),delivery_key(new,'2026-10-16'))
+        self.assertEqual(delivery_key(new,'2026-10-16'),delivery_key(dict(new),'2026-10-16'))
+        self.assertNotEqual(delivery_key(new,'2026-10-16'),delivery_key(new,'2026-10-17'))
+
     def test_frozen_contract(self):
         manifest=json.loads((BASE/'monitor_v17/research_manifest.json').read_text(encoding='utf8'))
         key='configs\\backtest\\model_1995_split_financial_exit_v17.json'

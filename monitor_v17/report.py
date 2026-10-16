@@ -4,6 +4,11 @@ from email.message import EmailMessage
 from pathlib import Path
 
 LABEL={True:'满足',False:'不满足',None:'未知'}
+
+def delivery_key(report,utc_day):
+    # A pre-close manual test and the post-close daily run may share a UTC date.
+    return '_'.join([utc_day,report.get('asof','未知'),report['model_version'],report['status']])
+
 FIELDS={'S':'标普收盘','S_lag_126':'126交易日前收盘','S_dn_126':'126交易日中下跌日数',
         'S_drawdown_pct':'当前回撤','DD_P95':'P95','DD_P99':'P99','sample_count':'完整轮次数','input_cutoff':'分位输入截止',
         'V':'VIX','V_c':'平静期均值','V_c_sd':'平静期标准差','V_threshold':'均值＋3σ',

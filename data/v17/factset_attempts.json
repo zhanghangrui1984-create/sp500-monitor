@@ -1,0 +1,14 @@
+{
+  "2026-06-19": {
+    "checked_on": "2026-10-15 00:00:00",
+    "error": "factset_20260619: HTTP 404; factset_20260619A: HTTP 404; factset_20260619B: HTTP 404; Unambiguous current S&P500 forward PE not found; factset_20260618A: HTTP 404; factset_20260618B: HTTP 404; factset_20260617: HTTP 404; factset_20260617A: HTTP 404; factset_20260617B: HTTP 404"
+  },
+  "2026-08-14": {
+    "checked_on": "2026-10-15 00:00:00",
+    "error": "factset_20260814: HTTP 404; factset_20260814A: HTTP 404; factset_20260814B: HTTP 404; factset_20260813: HTTP 404; factset_20260813A: HTTP 404; factset_20260813B: HTTP 404; factset_20260812: HTTP 404; factset_20260812A: HTTP 404; factset_20260812B: HTTP 404"
+  },
+  "2026-08-21": {
+    "checked_on": "2026-10-15 00:00:00",
+    "error": "factset_20260821: HTTP 404; factset_20260821A: HTTP 404; factset_20260821B: HTTP 404; factset_20260820: HTTP 404; factset_20260820A: HTTP 404; factset_20260820B: HTTP 404; factset_20260819: HTTP 404; factset_20260819A: HTTP 404; factset_20260819B: HTTP 404"
+  }
+}

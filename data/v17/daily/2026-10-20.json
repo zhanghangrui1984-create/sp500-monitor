@@ -1,0 +1,1129 @@
+{
+  "model_version": "hybrid-pe-split-financial-exit-v17-20261016",
+  "asof": "2026-10-19",
+  "market": {
+    "S": 7690.73,
+    "V": 18.44,
+    "MA200": 7275.66195,
+    "Sσ_200": 2.0648104089728068,
+    "S_lag_126": 7109.14,
+    "S_dn_126": 63.0,
+    "V_c": 18.01484126984127,
+    "V_c_sd": 3.287324984298571,
+    "V_threshold": 27.876816222736984,
+    "S_drawdown_pct": 0.01639610534945324,
+    "DD_P95": 0.08049102964529702,
+    "DD_P99": 0.25864101592050437,
+    "sample_count": 475.0,
+    "input_cutoff": "2026-10-16T00:00:00",
+    "NSX": 0.03227240586239466,
+    "FSX": null,
+    "CYCDEF_change_pct": null,
+    "DEFENSE": null
+  },
+  "factors": {
+    "S-6": {
+      "value": false,
+      "inputs": {
+        "S": 7690.73,
+        "S_lag_126": 7109.14,
+        "S_dn_126": 63.0
+      },
+      "source": "SPX",
+      "source_status": {
+        "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+        "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+        "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+        "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+        "observed_on": "2026-10-19",
+        "adjusted": false,
+        "components": {
+          "price_^GSPC": {
+            "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+            "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+            "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-19",
+            "adjusted": false
+          }
+        }
+      },
+      "meaning": "标普收盘价低于126个交易日前，且最近126个交易日中至少61天下跌；表示中期下跌，不要求连续六个月下跌。"
+    },
+    "S- ≥ P99": {
+      "value": false,
+      "inputs": {
+        "S_drawdown_pct": 0.01639610534945324,
+        "DD_P99": 0.25864101592050437,
+        "sample_count": 475.0,
+        "input_cutoff": "2026-10-16T00:00:00"
+      },
+      "source": "SPX",
+      "source_status": {
+        "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+        "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+        "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+        "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+        "observed_on": "2026-10-19",
+        "adjusted": false,
+        "components": {
+          "price_^GSPC": {
+            "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+            "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+            "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-19",
+            "adjusted": false
+          }
+        }
+      },
+      "meaning": "当日历史高点回撤≥当天P99。P99只使用前一交易日及以前已恢复前高的完整回撤轮次，不使用当日或未来价格。"
+    },
+    "P95 ≤ S- < P99": {
+      "value": false,
+      "inputs": {
+        "S_drawdown_pct": 0.01639610534945324,
+        "DD_P95": 0.08049102964529702,
+        "DD_P99": 0.25864101592050437,
+        "sample_count": 475.0,
+        "input_cutoff": "2026-10-16T00:00:00"
+      },
+      "source": "SPX",
+      "source_status": {
+        "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+        "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+        "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+        "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+        "observed_on": "2026-10-19",
+        "adjusted": false,
+        "components": {
+          "price_^GSPC": {
+            "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+            "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+            "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-19",
+            "adjusted": false
+          }
+        }
+      },
+      "meaning": "S−为当日收盘相对历史最高收盘的回撤。P95/P99由截至前一交易日已完成的1975年起回撤轮次等权线性分位计算，采用完整精度；下界含等号，上界不含。"
+    },
+    "V ≥ V_c+3σ": {
+      "value": false,
+      "inputs": {
+        "V": 18.44,
+        "V_c": 18.01484126984127,
+        "V_c_sd": 3.287324984298571,
+        "V_threshold": 27.876816222736984
+      },
+      "source": "VIX",
+      "source_status": {
+        "sha256": "1d5b46fc39ce5ed544e78099f584714d9ba073ac239ac21aa7e31620a4ada909",
+        "raw_file": "data/v17/raw/yahoo_VIX_1d5b46fc39ce5ed5.bin",
+        "retrieved_at": "2026-10-20T01:08:31.855354+00:00",
+        "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?period1=1420070400&period2=1792454400&interval=1d&events=history",
+        "observed_on": "2026-10-19",
+        "adjusted": false,
+        "components": {
+          "price_^VIX": {
+            "sha256": "1d5b46fc39ce5ed544e78099f584714d9ba073ac239ac21aa7e31620a4ada909",
+            "raw_file": "data/v17/raw/yahoo_VIX_1d5b46fc39ce5ed5.bin",
+            "retrieved_at": "2026-10-20T01:08:31.855354+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?period1=1420070400&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-19",
+            "adjusted": false
+          }
+        }
+      },
+      "meaning": "当日VIX≥平静期VIX均值＋3倍样本标准差。平静日为标普历史回撤<10%；取最近252个交易日内的平静样本，不足63个则向前取最近63个平静样本；不足63个为未知。"
+    },
+    "Sσ_200 ≤ -2σ": {
+      "value": false,
+      "inputs": {
+        "Sσ_200": 2.0648104089728068
+      },
+      "source": "SPX",
+      "source_status": {
+        "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+        "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+        "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+        "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+        "observed_on": "2026-10-19",
+        "adjusted": false,
+        "components": {
+          "price_^GSPC": {
+            "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+            "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+            "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-19",
+            "adjusted": false
+          }
+        }
+      },
+      "meaning": "标普价格减200日均线，再除以最近252日同类偏离的样本标准差，≤−2。"
+    },
+    "FSX ≤ -10%": {
+      "value": null,
+      "inputs": {
+        "FSX": null
+      },
+      "source": "ETF",
+      "source_status": {
+        "sha256": "475aa991a70eb80fd4480270d8e5545c5bb01275ff5760ee7c48e0d1692a41c5",
+        "raw_file": "data/v17/raw/yahoo_XLU_475aa991a70eb80f.bin",
+        "retrieved_at": "2026-10-20T01:08:32.377659+00:00",
+        "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLU?period1=1672531200&period2=1792454400&interval=1d&events=history",
+        "observed_on": "2026-10-16",
+        "adjusted": true,
+        "components": {
+          "price_XLF": {
+            "sha256": "3c873b3f91c7c3f1622ff490582786e6c4c6a3cd54d4d56747be1961c8a21af6",
+            "raw_file": "data/v17/raw/yahoo_XLF_3c873b3f91c7c3f1.bin",
+            "retrieved_at": "2026-10-20T01:08:31.831866+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLF?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_SPY": {
+            "sha256": "312a5275ae145b47193f571272a09b281c3f8c7ecc07a180d525d3d53c08fb87",
+            "raw_file": "data/v17/raw/yahoo_SPY_312a5275ae145b47.bin",
+            "retrieved_at": "2026-10-20T01:08:31.816306+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLY": {
+            "sha256": "d1f4fc59cdb0ed49dd78de2891c94fe6cf7151804860dc1bb7ed096149743818",
+            "raw_file": "data/v17/raw/yahoo_XLY_d1f4fc59cdb0ed49.bin",
+            "retrieved_at": "2026-10-20T01:08:32.054233+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLY?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLI": {
+            "sha256": "922d425915975ff18137ace30ea9f1f7bda96e0fce77609c703a6c58adeb2ab4",
+            "raw_file": "data/v17/raw/yahoo_XLI_922d425915975ff1.bin",
+            "retrieved_at": "2026-10-20T01:08:32.099070+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLI?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLB": {
+            "sha256": "f9067e16a40083d3184bbe155787620a9bd9aeff364d5561b965268914678f15",
+            "raw_file": "data/v17/raw/yahoo_XLB_f9067e16a40083d3.bin",
+            "retrieved_at": "2026-10-20T01:08:32.073920+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLB?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLP": {
+            "sha256": "a031f3b422246ae31f1ae30320a7a85cb36218917bea85586ab5fdd800bf6cee",
+            "raw_file": "data/v17/raw/yahoo_XLP_a031f3b422246ae3.bin",
+            "retrieved_at": "2026-10-20T01:08:32.103251+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLP?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLV": {
+            "sha256": "ad7d7579baa9c22eeb3628397fb5d917bf588cb2bb8063c463e1906e3e8e5bab",
+            "raw_file": "data/v17/raw/yahoo_XLV_ad7d7579baa9c22e.bin",
+            "retrieved_at": "2026-10-20T01:08:32.077948+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLV?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLU": {
+            "sha256": "475aa991a70eb80fd4480270d8e5545c5bb01275ff5760ee7c48e0d1692a41c5",
+            "raw_file": "data/v17/raw/yahoo_XLU_475aa991a70eb80f.bin",
+            "retrieved_at": "2026-10-20T01:08:32.377659+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLU?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          }
+        }
+      },
+      "unavailable_reason": "数据获取或时效检查失败",
+      "meaning": "FSX=(当日XLF复权收盘/SPY复权收盘)÷(252交易日前同一比值)−1；≤−10%成立。表示金融板块相对大盘明显走弱，不是金融股绝对跌幅10%。"
+    },
+    "DEFENSE": {
+      "value": null,
+      "inputs": {
+        "CYCDEF_change_pct": null
+      },
+      "source": "ETF",
+      "source_status": {
+        "sha256": "475aa991a70eb80fd4480270d8e5545c5bb01275ff5760ee7c48e0d1692a41c5",
+        "raw_file": "data/v17/raw/yahoo_XLU_475aa991a70eb80f.bin",
+        "retrieved_at": "2026-10-20T01:08:32.377659+00:00",
+        "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLU?period1=1672531200&period2=1792454400&interval=1d&events=history",
+        "observed_on": "2026-10-16",
+        "adjusted": true,
+        "components": {
+          "price_XLF": {
+            "sha256": "3c873b3f91c7c3f1622ff490582786e6c4c6a3cd54d4d56747be1961c8a21af6",
+            "raw_file": "data/v17/raw/yahoo_XLF_3c873b3f91c7c3f1.bin",
+            "retrieved_at": "2026-10-20T01:08:31.831866+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLF?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_SPY": {
+            "sha256": "312a5275ae145b47193f571272a09b281c3f8c7ecc07a180d525d3d53c08fb87",
+            "raw_file": "data/v17/raw/yahoo_SPY_312a5275ae145b47.bin",
+            "retrieved_at": "2026-10-20T01:08:31.816306+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLY": {
+            "sha256": "d1f4fc59cdb0ed49dd78de2891c94fe6cf7151804860dc1bb7ed096149743818",
+            "raw_file": "data/v17/raw/yahoo_XLY_d1f4fc59cdb0ed49.bin",
+            "retrieved_at": "2026-10-20T01:08:32.054233+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLY?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLI": {
+            "sha256": "922d425915975ff18137ace30ea9f1f7bda96e0fce77609c703a6c58adeb2ab4",
+            "raw_file": "data/v17/raw/yahoo_XLI_922d425915975ff1.bin",
+            "retrieved_at": "2026-10-20T01:08:32.099070+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLI?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLB": {
+            "sha256": "f9067e16a40083d3184bbe155787620a9bd9aeff364d5561b965268914678f15",
+            "raw_file": "data/v17/raw/yahoo_XLB_f9067e16a40083d3.bin",
+            "retrieved_at": "2026-10-20T01:08:32.073920+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLB?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLP": {
+            "sha256": "a031f3b422246ae31f1ae30320a7a85cb36218917bea85586ab5fdd800bf6cee",
+            "raw_file": "data/v17/raw/yahoo_XLP_a031f3b422246ae3.bin",
+            "retrieved_at": "2026-10-20T01:08:32.103251+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLP?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLV": {
+            "sha256": "ad7d7579baa9c22eeb3628397fb5d917bf588cb2bb8063c463e1906e3e8e5bab",
+            "raw_file": "data/v17/raw/yahoo_XLV_ad7d7579baa9c22e.bin",
+            "retrieved_at": "2026-10-20T01:08:32.077948+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLV?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          },
+          "price_XLU": {
+            "sha256": "475aa991a70eb80fd4480270d8e5545c5bb01275ff5760ee7c48e0d1692a41c5",
+            "raw_file": "data/v17/raw/yahoo_XLU_475aa991a70eb80f.bin",
+            "retrieved_at": "2026-10-20T01:08:32.377659+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLU?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-16",
+            "adjusted": true
+          }
+        }
+      },
+      "unavailable_reason": "数据获取或时效检查失败",
+      "meaning": "周期／防御板块比值较126交易日前下降，变化率严格<0。周期组为XLY、XLI、XLB，防御组为XLP、XLV、XLU；各组用归一化复权收盘价的几何平均。表示周期板块相对走弱，不要求绝对价格下跌。"
+    },
+    "NSX ≥ 40%": {
+      "value": false,
+      "inputs": {
+        "NSX": 0.03227240586239466
+      },
+      "source": "NDX",
+      "source_status": {
+        "sha256": "63d92f378fc9c8c8f73815c7a34f3bf851ef7c87efbad3433e5ca0f5ee5b621d",
+        "raw_file": "data/v17/raw/yahoo_NDX_63d92f378fc9c8c8.bin",
+        "retrieved_at": "2026-10-20T01:08:31.848976+00:00",
+        "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5ENDX?period1=1672531200&period2=1792454400&interval=1d&events=history",
+        "observed_on": "2026-10-19",
+        "adjusted": false,
+        "components": {
+          "price_^NDX": {
+            "sha256": "63d92f378fc9c8c8f73815c7a34f3bf851ef7c87efbad3433e5ca0f5ee5b621d",
+            "raw_file": "data/v17/raw/yahoo_NDX_63d92f378fc9c8c8.bin",
+            "retrieved_at": "2026-10-20T01:08:31.848976+00:00",
+            "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5ENDX?period1=1672531200&period2=1792454400&interval=1d&events=history",
+            "observed_on": "2026-10-19",
+            "adjusted": false
+          }
+        }
+      },
+      "meaning": "NSX=(当日NDX/SPX)÷(252交易日前NDX/SPX)−1；至少40%成立。衡量纳指100相对标普500的比值涨幅，不是两指数涨幅相减40个百分点。"
+    },
+    "NFCI_4w_down": {
+      "value": false,
+      "inputs": {
+        "NFCI": -0.499,
+        "NFCI_4w": -0.536,
+        "change": 0.037
+      },
+      "source": "NFCI",
+      "source_status": {
+        "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+        "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+        "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/NFCI",
+        "observed_on": "2026-10-09",
+        "vintage_asof": "2026-10-19",
+        "released_on": "2026-10-15",
+        "release_evidence": {
+          "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+          "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+          "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+        },
+        "components": {
+          "NFCI": {
+            "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+            "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+            "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/NFCI",
+            "observed_on": "2026-10-09",
+            "vintage_asof": "2026-10-19",
+            "released_on": "2026-10-15",
+            "release_evidence": {
+              "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+              "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+              "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+            }
+          }
+        }
+      },
+      "meaning": "最新已公布NFCI周值严格低于同一原生周序列4周前的值；比较端点，不要求连续下降，不要求NFCI>0。按三位小数整数差<0判断，相等不成立，任一端缺失为未知。沿用既定周度发布时间，不用20个交易日代替4周。"
+    },
+    "NFCI_26w_up": {
+      "value": false,
+      "inputs": {
+        "NFCI": -0.499,
+        "NFCI_26w": -0.474,
+        "change": -0.025
+      },
+      "source": "NFCI",
+      "source_status": {
+        "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+        "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+        "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/NFCI",
+        "observed_on": "2026-10-09",
+        "vintage_asof": "2026-10-19",
+        "released_on": "2026-10-15",
+        "release_evidence": {
+          "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+          "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+          "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+        },
+        "components": {
+          "NFCI": {
+            "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+            "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+            "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/NFCI",
+            "observed_on": "2026-10-09",
+            "vintage_asof": "2026-10-19",
+            "released_on": "2026-10-15",
+            "release_evidence": {
+              "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+              "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+              "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+            }
+          }
+        }
+      },
+      "meaning": "最新已公布NFCI周值高于26周前原生周值，差值严格>0；表示金融条件相对半年前收紧。不要求NFCI>0，也不要求每周连续上升。缺失周不跳过，按既定发布日对齐。"
+    },
+    "N < 0": {
+      "value": true,
+      "inputs": {
+        "NFCI": -0.499
+      },
+      "source": "NFCI",
+      "source_status": {
+        "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+        "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+        "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/NFCI",
+        "observed_on": "2026-10-09",
+        "vintage_asof": "2026-10-19",
+        "released_on": "2026-10-15",
+        "release_evidence": {
+          "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+          "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+          "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+        },
+        "components": {
+          "NFCI": {
+            "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+            "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+            "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/NFCI",
+            "observed_on": "2026-10-09",
+            "vintage_asof": "2026-10-19",
+            "released_on": "2026-10-15",
+            "release_evidence": {
+              "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+              "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+              "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+            }
+          }
+        }
+      },
+      "meaning": "最新可用NFCI严格小于0，表示金融条件比长期平均宽松；不表示金融条件正在改善。"
+    },
+    "NFR ≥ 0.958": {
+      "value": false,
+      "inputs": {
+        "NFR": 0.04,
+        "NFCI_high52": -0.459,
+        "NFCI": -0.499
+      },
+      "source": "NFCI",
+      "source_status": {
+        "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+        "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+        "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/NFCI",
+        "observed_on": "2026-10-09",
+        "vintage_asof": "2026-10-19",
+        "released_on": "2026-10-15",
+        "release_evidence": {
+          "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+          "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+          "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+        },
+        "components": {
+          "NFCI": {
+            "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+            "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+            "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/NFCI",
+            "observed_on": "2026-10-09",
+            "vintage_asof": "2026-10-19",
+            "released_on": "2026-10-15",
+            "release_evidence": {
+              "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+              "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+              "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+            }
+          }
+        }
+      },
+      "meaning": "NFR为NFCI修复幅度，衡量金融条件较过去一年最紧时改善了多少。NFCI越高表示金融条件越紧；NFR越大表示近期压力缓解越多，不要求当期NFCI高于或低于零。 NFR＝当周及此前51个连续周NFCI最高值−当周NFCI。Ⅱ档≥0.958点；Ⅰ档≥0.634点保留为研究分档。"
+    },
+    "ERX达标": {
+      "value": true,
+      "inputs": {
+        "CFNAIDIFF": 0.02,
+        "low36": -0.56,
+        "ERX": 0.58
+      },
+      "source": "CFNAIDIFF",
+      "source_status": {
+        "sha256": "57597b3117c3321857998a2c1f1f174411b90dc937de0a36bb98ce7a43213cbd",
+        "raw_file": "data/v17/raw/fred_CFNAIDIFF_57597b3117c33218.bin",
+        "retrieved_at": "2026-10-20T01:08:32.666413+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/CFNAIDIFF",
+        "observed_on": "2026-08-01",
+        "vintage_asof": "2026-10-19",
+        "released_on": "2026-09-21",
+        "release_evidence": {
+          "sha256": "2609fcae7ceff09de30c82d7da4eb7d7b4154b0d65d526ccba5db5f62cd24532",
+          "raw_file": "data/v17/raw/release_CFNAIDIFF_2609fcae7ceff09d.bin",
+          "retrieved_at": "2026-10-20T01:08:33.745538+00:00"
+        },
+        "components": {
+          "CFNAIDIFF": {
+            "sha256": "57597b3117c3321857998a2c1f1f174411b90dc937de0a36bb98ce7a43213cbd",
+            "raw_file": "data/v17/raw/fred_CFNAIDIFF_57597b3117c33218.bin",
+            "retrieved_at": "2026-10-20T01:08:32.666413+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/CFNAIDIFF",
+            "observed_on": "2026-08-01",
+            "vintage_asof": "2026-10-19",
+            "released_on": "2026-09-21",
+            "release_evidence": {
+              "sha256": "2609fcae7ceff09de30c82d7da4eb7d7b4154b0d65d526ccba5db5f62cd24532",
+              "raw_file": "data/v17/raw/release_CFNAIDIFF_2609fcae7ceff09d.bin",
+              "retrieved_at": "2026-10-20T01:08:33.745538+00:00"
+            }
+          }
+        }
+      },
+      "meaning": "ERX为经济修复幅度，使用芝加哥联储CFNAI扩散指数CFNAIDIFF，衡量整体经济活动较近三年低谷改善了多少；不是工业生产指数，也不是股价反弹幅度。 L＝当月及此前35个连续月CFNAIDIFF最低值；ERX＝当月CFNAIDIFF−L。L≤−0.27且ERX≥0.50点同时满足才达标。"
+    },
+    "HPG > 0": {
+      "value": true,
+      "inputs": {
+        "PERMIT": 1403.0,
+        "mean3": 1403.3333333333333,
+        "previous_mean3": 1382.0,
+        "HPG": 0.015436565364206345
+      },
+      "source": "PERMIT",
+      "source_status": {
+        "sha256": "a119ec3388aa7d2846daf8f978dee0c3397fbccb296a11f5da48858118521082",
+        "raw_file": "data/v17/raw/fred_PERMIT_a119ec3388aa7d28.bin",
+        "retrieved_at": "2026-10-20T01:08:32.506179+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/PERMIT",
+        "observed_on": "2026-08-01",
+        "vintage_asof": "2026-10-19",
+        "released_on": "2026-09-17",
+        "release_evidence": {
+          "sha256": "bbb18c828f2135298dbdec2811643c3439109d1b043b17299f069331c6134476",
+          "raw_file": "data/v17/raw/release_PERMIT_bbb18c828f213529.bin",
+          "retrieved_at": "2026-10-20T01:08:33.000697+00:00"
+        },
+        "components": {
+          "PERMIT": {
+            "sha256": "a119ec3388aa7d2846daf8f978dee0c3397fbccb296a11f5da48858118521082",
+            "raw_file": "data/v17/raw/fred_PERMIT_a119ec3388aa7d28.bin",
+            "retrieved_at": "2026-10-20T01:08:32.506179+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/PERMIT",
+            "observed_on": "2026-08-01",
+            "vintage_asof": "2026-10-19",
+            "released_on": "2026-09-17",
+            "release_evidence": {
+              "sha256": "bbb18c828f2135298dbdec2811643c3439109d1b043b17299f069331c6134476",
+              "raw_file": "data/v17/raw/release_PERMIT_bbb18c828f213529.bin",
+              "retrieved_at": "2026-10-20T01:08:33.000697+00:00"
+            }
+          }
+        }
+      },
+      "meaning": "住宅许可最近三个月均值÷去年同期三个月均值−1，严格大于0。"
+    },
+    "CPI_y ≥ 5.39%": {
+      "value": false,
+      "inputs": {
+        "CPI_y_pp": 3.7172508442689933
+      },
+      "source": "CPIAUCSL",
+      "source_status": {
+        "sha256": "465d017cd7a453d9a37a4baa5fe419c88056acf5e56b79ac2d450ae8de6f660f",
+        "raw_file": "data/v17/raw/fred_CPIAUCSL_465d017cd7a453d9.bin",
+        "retrieved_at": "2026-10-20T01:08:32.479818+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+        "observed_on": "2026-09-01",
+        "vintage_asof": "2026-10-19",
+        "released_on": "2026-10-14",
+        "release_evidence": {
+          "sha256": "387b222d497ebb8dd5099f0c3729abde76951da3b165e1a7e2f9edae5de7d245",
+          "raw_file": "data/v17/raw/release_CPIAUCSL_387b222d497ebb8d.bin",
+          "retrieved_at": "2026-10-20T01:08:32.956484+00:00"
+        },
+        "components": {
+          "CPIAUCSL": {
+            "sha256": "465d017cd7a453d9a37a4baa5fe419c88056acf5e56b79ac2d450ae8de6f660f",
+            "raw_file": "data/v17/raw/fred_CPIAUCSL_465d017cd7a453d9.bin",
+            "retrieved_at": "2026-10-20T01:08:32.479818+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+            "observed_on": "2026-09-01",
+            "vintage_asof": "2026-10-19",
+            "released_on": "2026-10-14",
+            "release_evidence": {
+              "sha256": "387b222d497ebb8dd5099f0c3729abde76951da3b165e1a7e2f9edae5de7d245",
+              "raw_file": "data/v17/raw/release_CPIAUCSL_387b222d497ebb8d.bin",
+              "retrieved_at": "2026-10-20T01:08:32.956484+00:00"
+            }
+          }
+        }
+      },
+      "meaning": "最新可用总体CPI季调同比≥5.39%，含等号；与高通胀离场共用Ⅰ档门槛，不要求同比已经回落。"
+    },
+    "CPI_y < 0%": {
+      "value": false,
+      "inputs": {
+        "CPI_y_pp": 3.7172508442689933
+      },
+      "source": "CPIAUCSL",
+      "source_status": {
+        "sha256": "465d017cd7a453d9a37a4baa5fe419c88056acf5e56b79ac2d450ae8de6f660f",
+        "raw_file": "data/v17/raw/fred_CPIAUCSL_465d017cd7a453d9.bin",
+        "retrieved_at": "2026-10-20T01:08:32.479818+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+        "observed_on": "2026-09-01",
+        "vintage_asof": "2026-10-19",
+        "released_on": "2026-10-14",
+        "release_evidence": {
+          "sha256": "387b222d497ebb8dd5099f0c3729abde76951da3b165e1a7e2f9edae5de7d245",
+          "raw_file": "data/v17/raw/release_CPIAUCSL_387b222d497ebb8d.bin",
+          "retrieved_at": "2026-10-20T01:08:32.956484+00:00"
+        },
+        "components": {
+          "CPIAUCSL": {
+            "sha256": "465d017cd7a453d9a37a4baa5fe419c88056acf5e56b79ac2d450ae8de6f660f",
+            "raw_file": "data/v17/raw/fred_CPIAUCSL_465d017cd7a453d9.bin",
+            "retrieved_at": "2026-10-20T01:08:32.479818+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+            "observed_on": "2026-09-01",
+            "vintage_asof": "2026-10-19",
+            "released_on": "2026-10-14",
+            "release_evidence": {
+              "sha256": "387b222d497ebb8dd5099f0c3729abde76951da3b165e1a7e2f9edae5de7d245",
+              "raw_file": "data/v17/raw/release_CPIAUCSL_387b222d497ebb8d.bin",
+              "retrieved_at": "2026-10-20T01:08:32.956484+00:00"
+            }
+          }
+        }
+      },
+      "meaning": "最新已发布总体CPI同比严格<0%；表示总体物价低于去年同期，不等同于全面持续通缩。采用CPIAUCSL总体CPI，非核心CPI、非环比。"
+    },
+    "Y-": {
+      "value": false,
+      "inputs": {
+        "10Y_minus_2Y_pp": 0.34999999999999964,
+        "paired_date": "2026-10-16T00:00:00"
+      },
+      "source": "Treasury",
+      "source_status": {
+        "sha256": "df927ebe1cd57d9191daff26c8de2daf3bfa23dbfdf8a9a73e6563b742eab7f7",
+        "raw_file": "data/v17/raw/fred_DGS2_df927ebe1cd57d91.bin",
+        "retrieved_at": "2026-10-20T01:08:33.357497+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/DGS2",
+        "observed_on": "2026-10-16",
+        "vintage_asof": "2026-10-19",
+        "components": {
+          "DGS10": {
+            "sha256": "cd3086d1d57571659bdfd50b32d796fc24087f3bf38bb186dadb335e7fb611fc",
+            "raw_file": "data/v17/raw/fred_DGS10_cd3086d1d5757165.bin",
+            "retrieved_at": "2026-10-20T01:08:32.939913+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/DGS10",
+            "observed_on": "2026-10-16",
+            "vintage_asof": "2026-10-19"
+          },
+          "DGS2": {
+            "sha256": "df927ebe1cd57d9191daff26c8de2daf3bfa23dbfdf8a9a73e6563b742eab7f7",
+            "raw_file": "data/v17/raw/fred_DGS2_df927ebe1cd57d91.bin",
+            "retrieved_at": "2026-10-20T01:08:33.357497+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/DGS2",
+            "observed_on": "2026-10-16",
+            "vintage_asof": "2026-10-19"
+          }
+        }
+      },
+      "meaning": "10年期美国国债收益率−2年期美国国债收益率严格<0，表示收益率曲线倒挂；按同日可用收盘值判断。"
+    },
+    "FCS ≥ 1.00pp": {
+      "value": null,
+      "inputs": {
+        "FCS_pp": null,
+        "source_week": "2026-10-02T00:00:00",
+        "age_days": 17
+      },
+      "source": "FCS",
+      "source_status": {
+        "sha256": "1de2edc7c5ff2841f6672d3c85cf3d5d3b1a82ee769324bf758d7cf7c00b9bac",
+        "raw_file": "data/v17/raw/fred_DTB3_1de2edc7c5ff2841.bin",
+        "retrieved_at": "2026-10-20T01:08:33.559476+00:00",
+        "source_url": "https://fred.stlouisfed.org/series/DTB3",
+        "observed_on": "2026-10-16",
+        "vintage_asof": "2026-10-19",
+        "components": {
+          "DCPF3M": {
+            "sha256": "c22245807f71bed419295041c9ed8bb216c99387d7da2a6f298bdbb70b61c429",
+            "raw_file": "data/v17/raw/fred_DCPF3M_c22245807f71bed4.bin",
+            "retrieved_at": "2026-10-20T01:08:33.816039+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/DCPF3M",
+            "observed_on": "2026-10-16",
+            "vintage_asof": "2026-10-19"
+          },
+          "DTB3": {
+            "sha256": "1de2edc7c5ff2841f6672d3c85cf3d5d3b1a82ee769324bf758d7cf7c00b9bac",
+            "raw_file": "data/v17/raw/fred_DTB3_1de2edc7c5ff2841.bin",
+            "retrieved_at": "2026-10-20T01:08:33.559476+00:00",
+            "source_url": "https://fred.stlouisfed.org/series/DTB3",
+            "observed_on": "2026-10-16",
+            "vintage_asof": "2026-10-19"
+          }
+        }
+      },
+      "meaning": "3个月AA金融商业票据利率DCPF3M−3个月国库券利率DTB3；同日报价配对后按周五结束的一周求均值，至少3个有效日。周均≥1.00个百分点即100基点成立，表示短期金融融资风险溢价偏高。"
+    },
+    "P+": {
+      "value": false,
+      "inputs": {
+        "P": 19.0,
+        "mean260": 19.876838301346503,
+        "sd260": 1.9678657418719303,
+        "threshold": 21.84470404321843
+      },
+      "source": "FactSet",
+      "source_status": {
+        "published_on": "2026-10-16",
+        "data_asof": "2026-10-15",
+        "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_101626.pdf",
+        "publication_basis": "actual_publication",
+        "observed_on": "2026-10-15",
+        "released_on": "2026-10-16",
+        "note": "当前260周估值窗口：历史美联储补缺39周；上线前后沿用上期FactSet共3周。"
+      },
+      "meaning": "最新可用未来12个月预期PE > 最近260个原生周PE的均值＋1个样本标准差，窗口含当周；表示估值相对自身近五年偏高。FactSet优先，缺周按既定美联储完整月数据补缺，按发布规则生效。"
+    },
+    "E-2": {
+      "value": false,
+      "inputs": {
+        "E": 407.5821052631579,
+        "E_4w": 399.882722513089,
+        "E_8w": 385.498
+      },
+      "source": "FactSet",
+      "source_status": {
+        "published_on": "2026-10-16",
+        "data_asof": "2026-10-15",
+        "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_101626.pdf",
+        "publication_basis": "actual_publication",
+        "observed_on": "2026-10-15",
+        "released_on": "2026-10-16",
+        "note": "当前260周估值窗口：历史美联储补缺39周；上线前后沿用上期FactSet共3周。"
+      },
+      "meaning": "最新可用预测EPS＜4周前预测EPS＜8周前预测EPS；3个端点连续下调，不要求每周都下调。"
+    }
+  },
+  "triggers": {
+    "统一离场": false,
+    "2007离场": false,
+    "深跌修复入场": false,
+    "2022入场": false,
+    "白银坑入场": false
+  },
+  "sources": {
+    "SPX": {
+      "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+      "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+      "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+      "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+      "observed_on": "2026-10-19",
+      "adjusted": false,
+      "components": {
+        "price_^GSPC": {
+          "sha256": "be6c27ee98cec815bee811a3554904429f6e204bc908773b509792ce7fcfe5e5",
+          "raw_file": "data/v17/raw/yahoo_GSPC_be6c27ee98cec815.bin",
+          "retrieved_at": "2026-10-20T01:08:31.824448+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-19",
+          "adjusted": false
+        }
+      }
+    },
+    "VIX": {
+      "sha256": "1d5b46fc39ce5ed544e78099f584714d9ba073ac239ac21aa7e31620a4ada909",
+      "raw_file": "data/v17/raw/yahoo_VIX_1d5b46fc39ce5ed5.bin",
+      "retrieved_at": "2026-10-20T01:08:31.855354+00:00",
+      "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?period1=1420070400&period2=1792454400&interval=1d&events=history",
+      "observed_on": "2026-10-19",
+      "adjusted": false,
+      "components": {
+        "price_^VIX": {
+          "sha256": "1d5b46fc39ce5ed544e78099f584714d9ba073ac239ac21aa7e31620a4ada909",
+          "raw_file": "data/v17/raw/yahoo_VIX_1d5b46fc39ce5ed5.bin",
+          "retrieved_at": "2026-10-20T01:08:31.855354+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?period1=1420070400&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-19",
+          "adjusted": false
+        }
+      }
+    },
+    "NDX": {
+      "sha256": "63d92f378fc9c8c8f73815c7a34f3bf851ef7c87efbad3433e5ca0f5ee5b621d",
+      "raw_file": "data/v17/raw/yahoo_NDX_63d92f378fc9c8c8.bin",
+      "retrieved_at": "2026-10-20T01:08:31.848976+00:00",
+      "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5ENDX?period1=1672531200&period2=1792454400&interval=1d&events=history",
+      "observed_on": "2026-10-19",
+      "adjusted": false,
+      "components": {
+        "price_^NDX": {
+          "sha256": "63d92f378fc9c8c8f73815c7a34f3bf851ef7c87efbad3433e5ca0f5ee5b621d",
+          "raw_file": "data/v17/raw/yahoo_NDX_63d92f378fc9c8c8.bin",
+          "retrieved_at": "2026-10-20T01:08:31.848976+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5ENDX?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-19",
+          "adjusted": false
+        }
+      }
+    },
+    "ETF": {
+      "sha256": "475aa991a70eb80fd4480270d8e5545c5bb01275ff5760ee7c48e0d1692a41c5",
+      "raw_file": "data/v17/raw/yahoo_XLU_475aa991a70eb80f.bin",
+      "retrieved_at": "2026-10-20T01:08:32.377659+00:00",
+      "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLU?period1=1672531200&period2=1792454400&interval=1d&events=history",
+      "observed_on": "2026-10-16",
+      "adjusted": true,
+      "components": {
+        "price_XLF": {
+          "sha256": "3c873b3f91c7c3f1622ff490582786e6c4c6a3cd54d4d56747be1961c8a21af6",
+          "raw_file": "data/v17/raw/yahoo_XLF_3c873b3f91c7c3f1.bin",
+          "retrieved_at": "2026-10-20T01:08:31.831866+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLF?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-16",
+          "adjusted": true
+        },
+        "price_SPY": {
+          "sha256": "312a5275ae145b47193f571272a09b281c3f8c7ecc07a180d525d3d53c08fb87",
+          "raw_file": "data/v17/raw/yahoo_SPY_312a5275ae145b47.bin",
+          "retrieved_at": "2026-10-20T01:08:31.816306+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-16",
+          "adjusted": true
+        },
+        "price_XLY": {
+          "sha256": "d1f4fc59cdb0ed49dd78de2891c94fe6cf7151804860dc1bb7ed096149743818",
+          "raw_file": "data/v17/raw/yahoo_XLY_d1f4fc59cdb0ed49.bin",
+          "retrieved_at": "2026-10-20T01:08:32.054233+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLY?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-16",
+          "adjusted": true
+        },
+        "price_XLI": {
+          "sha256": "922d425915975ff18137ace30ea9f1f7bda96e0fce77609c703a6c58adeb2ab4",
+          "raw_file": "data/v17/raw/yahoo_XLI_922d425915975ff1.bin",
+          "retrieved_at": "2026-10-20T01:08:32.099070+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLI?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-16",
+          "adjusted": true
+        },
+        "price_XLB": {
+          "sha256": "f9067e16a40083d3184bbe155787620a9bd9aeff364d5561b965268914678f15",
+          "raw_file": "data/v17/raw/yahoo_XLB_f9067e16a40083d3.bin",
+          "retrieved_at": "2026-10-20T01:08:32.073920+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLB?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-16",
+          "adjusted": true
+        },
+        "price_XLP": {
+          "sha256": "a031f3b422246ae31f1ae30320a7a85cb36218917bea85586ab5fdd800bf6cee",
+          "raw_file": "data/v17/raw/yahoo_XLP_a031f3b422246ae3.bin",
+          "retrieved_at": "2026-10-20T01:08:32.103251+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLP?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-16",
+          "adjusted": true
+        },
+        "price_XLV": {
+          "sha256": "ad7d7579baa9c22eeb3628397fb5d917bf588cb2bb8063c463e1906e3e8e5bab",
+          "raw_file": "data/v17/raw/yahoo_XLV_ad7d7579baa9c22e.bin",
+          "retrieved_at": "2026-10-20T01:08:32.077948+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLV?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-16",
+          "adjusted": true
+        },
+        "price_XLU": {
+          "sha256": "475aa991a70eb80fd4480270d8e5545c5bb01275ff5760ee7c48e0d1692a41c5",
+          "raw_file": "data/v17/raw/yahoo_XLU_475aa991a70eb80f.bin",
+          "retrieved_at": "2026-10-20T01:08:32.377659+00:00",
+          "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLU?period1=1672531200&period2=1792454400&interval=1d&events=history",
+          "observed_on": "2026-10-16",
+          "adjusted": true
+        }
+      }
+    },
+    "NFCI": {
+      "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+      "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+      "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+      "source_url": "https://fred.stlouisfed.org/series/NFCI",
+      "observed_on": "2026-10-09",
+      "vintage_asof": "2026-10-19",
+      "released_on": "2026-10-15",
+      "release_evidence": {
+        "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+        "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+        "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+      },
+      "components": {
+        "NFCI": {
+          "sha256": "b8b33bf4f0b6ee2a74ef417ba8327f1aca7a3db5d7341218406ae880efa83bfc",
+          "raw_file": "data/v17/raw/fred_NFCI_b8b33bf4f0b6ee2a.bin",
+          "retrieved_at": "2026-10-20T01:08:32.772005+00:00",
+          "source_url": "https://fred.stlouisfed.org/series/NFCI",
+          "observed_on": "2026-10-09",
+          "vintage_asof": "2026-10-19",
+          "released_on": "2026-10-15",
+          "release_evidence": {
+            "sha256": "a355ecee449c8056b69b08e0e3f47617c36ee248341a6bc77d1ec24478a036db",
+            "raw_file": "data/v17/raw/release_NFCI_a355ecee449c8056.bin",
+            "retrieved_at": "2026-10-20T01:08:35.039386+00:00"
+          }
+        }
+      }
+    },
+    "CFNAIDIFF": {
+      "sha256": "57597b3117c3321857998a2c1f1f174411b90dc937de0a36bb98ce7a43213cbd",
+      "raw_file": "data/v17/raw/fred_CFNAIDIFF_57597b3117c33218.bin",
+      "retrieved_at": "2026-10-20T01:08:32.666413+00:00",
+      "source_url": "https://fred.stlouisfed.org/series/CFNAIDIFF",
+      "observed_on": "2026-08-01",
+      "vintage_asof": "2026-10-19",
+      "released_on": "2026-09-21",
+      "release_evidence": {
+        "sha256": "2609fcae7ceff09de30c82d7da4eb7d7b4154b0d65d526ccba5db5f62cd24532",
+        "raw_file": "data/v17/raw/release_CFNAIDIFF_2609fcae7ceff09d.bin",
+        "retrieved_at": "2026-10-20T01:08:33.745538+00:00"
+      },
+      "components": {
+        "CFNAIDIFF": {
+          "sha256": "57597b3117c3321857998a2c1f1f174411b90dc937de0a36bb98ce7a43213cbd",
+          "raw_file": "data/v17/raw/fred_CFNAIDIFF_57597b3117c33218.bin",
+          "retrieved_at": "2026-10-20T01:08:32.666413+00:00",
+          "source_url": "https://fred.stlouisfed.org/series/CFNAIDIFF",
+          "observed_on": "2026-08-01",
+          "vintage_asof": "2026-10-19",
+          "released_on": "2026-09-21",
+          "release_evidence": {
+            "sha256": "2609fcae7ceff09de30c82d7da4eb7d7b4154b0d65d526ccba5db5f62cd24532",
+            "raw_file": "data/v17/raw/release_CFNAIDIFF_2609fcae7ceff09d.bin",
+            "retrieved_at": "2026-10-20T01:08:33.745538+00:00"
+          }
+        }
+      }
+    },
+    "PERMIT": {
+      "sha256": "a119ec3388aa7d2846daf8f978dee0c3397fbccb296a11f5da48858118521082",
+      "raw_file": "data/v17/raw/fred_PERMIT_a119ec3388aa7d28.bin",
+      "retrieved_at": "2026-10-20T01:08:32.506179+00:00",
+      "source_url": "https://fred.stlouisfed.org/series/PERMIT",
+      "observed_on": "2026-08-01",
+      "vintage_asof": "2026-10-19",
+      "released_on": "2026-09-17",
+      "release_evidence": {
+        "sha256": "bbb18c828f2135298dbdec2811643c3439109d1b043b17299f069331c6134476",
+        "raw_file": "data/v17/raw/release_PERMIT_bbb18c828f213529.bin",
+        "retrieved_at": "2026-10-20T01:08:33.000697+00:00"
+      },
+      "components": {
+        "PERMIT": {
+          "sha256": "a119ec3388aa7d2846daf8f978dee0c3397fbccb296a11f5da48858118521082",
+          "raw_file": "data/v17/raw/fred_PERMIT_a119ec3388aa7d28.bin",
+          "retrieved_at": "2026-10-20T01:08:32.506179+00:00",
+          "source_url": "https://fred.stlouisfed.org/series/PERMIT",
+          "observed_on": "2026-08-01",
+          "vintage_asof": "2026-10-19",
+          "released_on": "2026-09-17",
+          "release_evidence": {
+            "sha256": "bbb18c828f2135298dbdec2811643c3439109d1b043b17299f069331c6134476",
+            "raw_file": "data/v17/raw/release_PERMIT_bbb18c828f213529.bin",
+            "retrieved_at": "2026-10-20T01:08:33.000697+00:00"
+          }
+        }
+      }
+    },
+    "CPIAUCSL": {
+      "sha256": "465d017cd7a453d9a37a4baa5fe419c88056acf5e56b79ac2d450ae8de6f660f",
+      "raw_file": "data/v17/raw/fred_CPIAUCSL_465d017cd7a453d9.bin",
+      "retrieved_at": "2026-10-20T01:08:32.479818+00:00",
+      "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+      "observed_on": "2026-09-01",
+      "vintage_asof": "2026-10-19",
+      "released_on": "2026-10-14",
+      "release_evidence": {
+        "sha256": "387b222d497ebb8dd5099f0c3729abde76951da3b165e1a7e2f9edae5de7d245",
+        "raw_file": "data/v17/raw/release_CPIAUCSL_387b222d497ebb8d.bin",
+        "retrieved_at": "2026-10-20T01:08:32.956484+00:00"
+      },
+      "components": {
+        "CPIAUCSL": {
+          "sha256": "465d017cd7a453d9a37a4baa5fe419c88056acf5e56b79ac2d450ae8de6f660f",
+          "raw_file": "data/v17/raw/fred_CPIAUCSL_465d017cd7a453d9.bin",
+          "retrieved_at": "2026-10-20T01:08:32.479818+00:00",
+          "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
+          "observed_on": "2026-09-01",
+          "vintage_asof": "2026-10-19",
+          "released_on": "2026-10-14",
+          "release_evidence": {
+            "sha256": "387b222d497ebb8dd5099f0c3729abde76951da3b165e1a7e2f9edae5de7d245",
+            "raw_file": "data/v17/raw/release_CPIAUCSL_387b222d497ebb8d.bin",
+            "retrieved_at": "2026-10-20T01:08:32.956484+00:00"
+          }
+        }
+      }
+    },
+    "Treasury": {
+      "sha256": "df927ebe1cd57d9191daff26c8de2daf3bfa23dbfdf8a9a73e6563b742eab7f7",
+      "raw_file": "data/v17/raw/fred_DGS2_df927ebe1cd57d91.bin",
+      "retrieved_at": "2026-10-20T01:08:33.357497+00:00",
+      "source_url": "https://fred.stlouisfed.org/series/DGS2",
+      "observed_on": "2026-10-16",
+      "vintage_asof": "2026-10-19",
+      "components": {
+        "DGS10": {
+          "sha256": "cd3086d1d57571659bdfd50b32d796fc24087f3bf38bb186dadb335e7fb611fc",
+          "raw_file": "data/v17/raw/fred_DGS10_cd3086d1d5757165.bin",
+          "retrieved_at": "2026-10-20T01:08:32.939913+00:00",
+          "source_url": "https://fred.stlouisfed.org/series/DGS10",
+          "observed_on": "2026-10-16",
+          "vintage_asof": "2026-10-19"
+        },
+        "DGS2": {
+          "sha256": "df927ebe1cd57d9191daff26c8de2daf3bfa23dbfdf8a9a73e6563b742eab7f7",
+          "raw_file": "data/v17/raw/fred_DGS2_df927ebe1cd57d91.bin",
+          "retrieved_at": "2026-10-20T01:08:33.357497+00:00",
+          "source_url": "https://fred.stlouisfed.org/series/DGS2",
+          "observed_on": "2026-10-16",
+          "vintage_asof": "2026-10-19"
+        }
+      }
+    },
+    "FCS": {
+      "sha256": "1de2edc7c5ff2841f6672d3c85cf3d5d3b1a82ee769324bf758d7cf7c00b9bac",
+      "raw_file": "data/v17/raw/fred_DTB3_1de2edc7c5ff2841.bin",
+      "retrieved_at": "2026-10-20T01:08:33.559476+00:00",
+      "source_url": "https://fred.stlouisfed.org/series/DTB3",
+      "observed_on": "2026-10-16",
+      "vintage_asof": "2026-10-19",
+      "components": {
+        "DCPF3M": {
+          "sha256": "c22245807f71bed419295041c9ed8bb216c99387d7da2a6f298bdbb70b61c429",
+          "raw_file": "data/v17/raw/fred_DCPF3M_c22245807f71bed4.bin",
+          "retrieved_at": "2026-10-20T01:08:33.816039+00:00",
+          "source_url": "https://fred.stlouisfed.org/series/DCPF3M",
+          "observed_on": "2026-10-16",
+          "vintage_asof": "2026-10-19"
+        },
+        "DTB3": {
+          "sha256": "1de2edc7c5ff2841f6672d3c85cf3d5d3b1a82ee769324bf758d7cf7c00b9bac",
+          "raw_file": "data/v17/raw/fred_DTB3_1de2edc7c5ff2841.bin",
+          "retrieved_at": "2026-10-20T01:08:33.559476+00:00",
+          "source_url": "https://fred.stlouisfed.org/series/DTB3",
+          "observed_on": "2026-10-16",
+          "vintage_asof": "2026-10-19"
+        }
+      }
+    },
+    "FactSet": {
+      "published_on": "2026-10-16",
+      "data_asof": "2026-10-15",
+      "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_101626.pdf",
+      "publication_basis": "actual_publication",
+      "observed_on": "2026-10-15",
+      "released_on": "2026-10-16",
+      "note": "当前260周估值窗口：历史美联储补缺39周；上线前后沿用上期FactSet共3周。"
+    }
+  },
+  "status": "degraded",
+  "warnings": [
+    "price_XLF：2026-10-19 收盘缺失。",
+    "price_SPY：2026-10-19 收盘缺失。",
+    "price_XLY：2026-10-19 收盘缺失。",
+    "price_XLI：2026-10-19 收盘缺失。",
+    "price_XLB：2026-10-19 收盘缺失。",
+    "price_XLP：2026-10-19 收盘缺失。",
+    "price_XLV：2026-10-19 收盘缺失。",
+    "price_XLU：2026-10-19 收盘缺失。",
+    "未知因子：FSX ≤ -10%、DEFENSE、FCS ≥ 1.00pp"
+  ],
+  "decision": "所有入场和离场组合均未触发，维持原状态。",
+  "formulas": {
+    "统一离场": "(NFCI_26w_up AND DEFENSE AND P+ AND ((Y- AND NSX ≥ 40%) OR CPI_y < 0% OR CPI_y ≥ 5.39%))",
+    "2007离场": "(NFCI_4w_down AND FSX ≤ -10% AND FCS ≥ 1.00pp)",
+    "深跌修复入场": "(S-6 AND S- ≥ P99 AND V ≥ V_c+3σ AND (NFR ≥ 0.958 OR ERX达标))",
+    "2022入场": "(P95 ≤ S- < P99 AND CPI_y ≥ 5.39% AND E-2 AND N < 0)",
+    "白银坑入场": "(P95 ≤ S- < P99 AND HPG > 0 AND V ≥ V_c+3σ AND Sσ_200 ≤ -2σ AND NOT(CPI_y ≥ 5.39%))"
+  },
+  "generated_at": "2026-10-20T01:08:30.988568+00:00",
+  "code_commit": "ec173dacc584953ae3aae5920af6480fa27a8b9f",
+  "session_note": "使用最近已完成的美股交易日；休市日重复标明上一交易日截面。",
+  "download_errors": {},
+  "factset_download_errors": [],
+  "run_mode": "live"
+}

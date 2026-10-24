@@ -902,5 +902,18 @@
     "sha256": "816935307252ff26eb8d719c4874064aa5b8a018ed57568baac0cbc6241a4508",
     "raw_file": "data/v17/raw/factset_20261016_816935307252ff26.bin",
     "retrieved_at": "2026-10-17T00:39:09.522886+00:00"
+  },
+  {
+    "report_id": "FactSet_2026-10-23",
+    "published_on": "2026-10-23",
+    "data_asof": "2026-10-22",
+    "pe_reported": 18.7,
+    "horizon": "forward_12_months",
+    "eps_method": "price_divided_by_rounded_forward_pe",
+    "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_102326.pdf",
+    "asof_basis": "accepted_report_prior_equity_close_convention",
+    "sha256": "fcdb208600fd9ab5a270e2e244aa462414bcb262b200c89dac2885428390adf1",
+    "raw_file": "data/v17/raw/factset_20261023_fcdb208600fd9ab5.bin",
+    "retrieved_at": "2026-10-24T00:53:23.724317+00:00"
   }
 ]

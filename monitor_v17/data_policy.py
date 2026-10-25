@@ -46,7 +46,8 @@ def cfnai_health(observed, asof, calendar):
     newer=[r for r in calendar if pd.Timestamp(r['observed_on'])>observed]
     due=[r for r in newer if pd.Timestamp(r['published_on'])<day]
     if due:
-        r=due[-1]
+        # A second missed release must not restart the grace period for old data.
+        r=due[0]
         overdue=(day-pd.Timestamp(r['published_on'])).days
         return overdue>7,f"CFNAI 官方计划 {r['published_on']} 发布 {r['observed_on'][:7]} 数据，尚未取得；沿用旧值，逾期超过7天才标记持续发布延迟或采集异常。"
     if newer:

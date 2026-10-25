@@ -32,6 +32,7 @@ class CollectionTests(unittest.TestCase):
         for day in ['2026-10-23','2026-10-26','2026-11-02']:
             self.assertFalse(cfnai_health('2026-08-01',day,rows)[0])
         self.assertTrue(cfnai_health('2026-08-01','2026-11-03',rows)[0])
+        self.assertTrue(cfnai_health('2026-08-01','2026-11-24',rows)[0])
         self.assertFalse(cfnai_health('2026-09-01','2026-11-03',rows)[0])
         self.assertTrue(cfnai_health('2026-10-01','2027-01-01',rows)[0])
         with self.assertRaises(ValueError):parse_cfnai_calendar('<html>unavailable</html>')

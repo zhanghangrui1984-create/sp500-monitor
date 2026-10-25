@@ -16,7 +16,7 @@ FIELDS={'S':'标普收盘','S_lag_126':'126交易日前收盘','S_dn_126':'126�
         'NSX':'纳指相对标普超涨','NFCI_4w':'4周前NFCI','NFCI_26w':'26周前NFCI','change':'NFCI变化',
         'NFCI_high52':'52周最高NFCI','low36':'36月低点','mean3':'许可3月均值','previous_mean3':'去年同期均值',
         'CPI_y_pp':'CPI同比','10Y_minus_2Y_pp':'10年−2年收益率','paired_date':'同日报价日期',
-        'FCS_pp':'融资利差','source_week':'来源周','age_days':'距来源周天数','P':'预期PE',
+        'FCS_pp':'融资利差','source_week':'来源周','age_days':'距来源周天数','valid_days':'有效报价天数','available_on':'可用日期','P':'预期PE',
         'mean260':'260周均值','sd260':'260周标准差','threshold':'PE上界','E':'预期EPS','E_4w':'4周前EPS','E_8w':'8周前EPS'}
 
 def format_input(k,v):
@@ -70,7 +70,7 @@ def render(r):
 <h2>各因子计算值</h2><table border="1" cellpadding="7" cellspacing="0" style="border-collapse:collapse;width:100%;font-size:13px"><tr><th>因子</th><th>状态</th><th>计算输入</th><th>观察日／发布日期</th><th>含义</th></tr>{''.join(factors)}</table>
 <h2>数据来源与时效</h2><table border="1" cellpadding="7" cellspacing="0" style="border-collapse:collapse;width:100%"><tr><th>来源</th><th>观察日</th><th>发布日期</th><th>说明</th></tr>{''.join(sources)}</table>
 <p>P95、P99 均只用截面前一交易日及以前已恢复前高的完整回撤轮次计算，等权 Type 7 线性分位；未完成的本轮回撤不进入分位样本。CPI 门槛固定为 5.39%。</p>
-<p>模型版本：{esc(r.get('model_version','v17'))}<br>代码提交：{esc(r.get('code_commit','local'))}<br>
+<p>模型版本：{esc(r.get('model_version','v17'))}<br>数据采集规则：{esc(r.get('data_policy_version','原始规则'))}<br>代码提交：{esc(r.get('code_commit','local'))}<br>
 <a href="https://github.com/zhanghangrui1984-create/sp500-monitor/blob/main/docs/因子获取与计算_v17.md">全部因子获取、计算与运行说明</a></p></body></html>'''
 
 def send(r,body):

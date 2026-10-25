@@ -8,6 +8,7 @@ from urllib.error import HTTPError
 import numpy as np
 import pandas as pd
 from pypdf import PdfReader
+from .data_policy import CFNAI_CALENDAR_URL, parse_cfnai_calendar
 
 BASE=Path(__file__).resolve().parents[1]
 DATA=BASE/'data/v17';RAW=DATA/'raw'
@@ -19,11 +20,12 @@ def write_json(path,data):
     path=Path(path);path.parent.mkdir(parents=True,exist_ok=True)
     temp=path.with_suffix(path.suffix+'.tmp');temp.write_text(json.dumps(data,ensure_ascii=False,indent=2,allow_nan=False),encoding='utf8');temp.replace(path)
 
-def request(url,key,attempts=3):
+def request(url,key,attempts=3,validate=None):
     RAW.mkdir(parents=True,exist_ok=True)
     for attempt in range(attempts):
         try:
             with urlopen(Request(url,headers={'User-Agent':'Mozilla/5.0 (SP500 research monitor)'}),timeout=25) as r:body=r.read()
+            if validate is not None:validate(body)
             digest=hashlib.sha256(body).hexdigest()
             path=RAW/(key+'_'+digest[:16]+'.bin');path.write_bytes(body)
             return body,{'sha256':digest,'raw_file':str(path.relative_to(BASE)),
@@ -34,26 +36,70 @@ def request(url,key,attempts=3):
             if attempt==attempts-1:raise RuntimeError(f'{key}: {type(e).__name__}') from None
         time.sleep(2**attempt)
 
+def parse_yahoo(raw,ticker,end,adjusted=False,now=None):
+    """A completed regular-session quote can fill Yahoo's delayed final daily row."""
+    import exchange_calendars as xc
+    result=json.loads(raw)['chart']
+    if result.get('error') or not result.get('result'):raise ValueError('Yahoo chart error')
+    obj=result['result'][0];q=obj['indicators'];day=pd.Timestamp(end).normalize()
+    vals=q['adjclose'][0]['adjclose'] if adjusted else q['quote'][0]['close']
+    idx=pd.to_datetime(obj['timestamp'],unit='s',utc=True).tz_convert('America/New_York').tz_localize(None).normalize()
+    s=pd.Series(vals,index=idx,dtype=float).sort_index().loc[:day]
+    if s.index.has_duplicates or s.empty or ((s<=0)&s.notna()).any():raise ValueError('Invalid price series '+ticker)
+    evidence={}
+    if pd.isna(s.get(day,np.nan)):
+        meta=obj['meta'];stamp=pd.Timestamp(meta.get('regularMarketTime',0),unit='s',tz='UTC')
+        current=pd.Timestamp(now or datetime.now(timezone.utc))
+        cal=xc.get_calendar('XNYS',start=str(day.date()),end=str((day+pd.Timedelta(days=7)).date()))
+        close=cal.session_close(day)
+        price=meta.get('regularMarketPrice')
+        # No intraday, after-hours, different-date, or historical-date substitution.
+        if (day not in idx or idx[-1]!=day or stamp.tz_convert('America/New_York').date()!=day.date()
+            or not close<=stamp<=close+pd.Timedelta(minutes=5) or current<close+pd.Timedelta(minutes=60)
+            or price is None or not np.isfinite(price) or price<=0):
+            raise ValueError('Completed regular-session close unavailable '+ticker)
+        # On the latest completed quote date the adjustment factor is one. Earlier
+        # values retain the vendor's adjusted history (including same-day distributions).
+        s.loc[day]=float(price)
+        evidence={'close_completion':'regularMarketPrice_at_verified_session_close',
+                  'regular_market_time':stamp.isoformat(),'exchange_close':close.isoformat(),
+                  'note':'Yahoo 当日历史行延迟；用同一响应中经交易所收盘时刻核验的常规时段收盘价补齐。'}
+    if not adjusted:s=s.round(2)
+    return s,evidence
+
 def yahoo(ticker,start,end,adjusted=False):
     params={'period1':int(pd.Timestamp(start,tz='UTC').timestamp()),
             'period2':int((pd.Timestamp(end,tz='UTC')+pd.Timedelta(days=1)).timestamp()),'interval':'1d','events':'history'}
     url='https://query1.finance.yahoo.com/v8/finance/chart/'+quote(ticker,safe='')+'?'+urlencode(params)
-    raw,meta=request(url,'yahoo_'+ticker.replace('^',''))
-    obj=json.loads(raw)['chart']['result'][0];q=obj['indicators']
-    vals=q['adjclose'][0]['adjclose'] if adjusted else q['quote'][0]['close']
-    idx=pd.to_datetime(obj['timestamp'],unit='s',utc=True).tz_convert('America/New_York').tz_localize(None).normalize()
-    s=pd.Series(vals,index=idx,dtype=float).sort_index().loc[:end]
-    if s.index.has_duplicates or s.empty or ((s<=0)&s.notna()).any():raise ValueError('Invalid price series '+ticker)
-    if not adjusted:s=s.round(2)  # published index precision; remove Yahoo float32 storage noise
-    meta.update(source_url=url,observed_on=str(s.last_valid_index().date()),adjusted=adjusted)
+    raw,meta=request(url,'yahoo_'+ticker.replace('^',''),validate=lambda b:parse_yahoo(b,ticker,end,adjusted))
+    s,evidence=parse_yahoo(raw,ticker,end,adjusted)
+    meta.update(source_url=url,observed_on=str(s.last_valid_index().date()),adjusted=adjusted,**evidence)
     return s,meta
+
+def validate_fred(body):
+    obj=json.loads(body)
+    if not isinstance(obj.get('observations'),list) or not obj['observations']:
+        raise ValueError('FRED observations missing')
+    if len(obj['observations'])!=obj.get('count'):raise ValueError('FRED pagination not exhausted')
+    return obj
+
+def cfnai_calendar():
+    path=DATA/'cfnai_calendar.json'
+    try:
+        raw,proof=request(CFNAI_CALENDAR_URL,'cfnai_calendar',validate=parse_cfnai_calendar)
+        result={'rows':parse_cfnai_calendar(raw),'source_url':CFNAI_CALENDAR_URL,**proof}
+        write_json(path,result)
+        return result
+    except Exception:
+        cached=json.loads((path if path.exists() else BASE/'seed/cfnai_calendar.json').read_text(encoding='utf8'))
+        return dict(cached,fetch_failed=True)
 
 def fred(series,asof):
     key=os.environ.get('FRED_API_KEY')
     if not key:raise RuntimeError('FRED_API_KEY is not configured')
     args={'api_key':key,'series_id':series,'file_type':'json','observation_start':'2010-01-01',
           'observation_end':str(asof),'realtime_start':str(asof),'realtime_end':str(asof),'limit':100000}
-    raw,meta=request('https://api.stlouisfed.org/fred/series/observations?'+urlencode(args),'fred_'+series)
+    raw,meta=request('https://api.stlouisfed.org/fred/series/observations?'+urlencode(args),'fred_'+series,validate=validate_fred)
     result=json.loads(raw);rows=result['observations']
     if len(rows)!=result['count']:raise ValueError('FRED pagination not exhausted')
     values=pd.Series({pd.Timestamp(r['date']):float(r['value']) if r['value']!='.' else np.nan for r in rows},dtype=float).sort_index()
@@ -62,7 +108,7 @@ def fred(series,asof):
     if series in ('NFCI','CFNAIDIFF','PERMIT','CPIAUCSL'):
         # FRED's initial-release output supplies actual dates; historical values still use the requested vintage.
         args.update(output_type=4,realtime_start='1776-07-04',observation_start='2024-01-01')
-        initial,proof=request('https://api.stlouisfed.org/fred/series/observations?'+urlencode(args),'release_'+series)
+        initial,proof=request('https://api.stlouisfed.org/fred/series/observations?'+urlencode(args),'release_'+series,validate=validate_fred)
         releases={pd.Timestamp(r['date']):pd.Timestamp(r['realtime_start']) for r in json.loads(initial)['observations']}
         usable=[]
         for obs in values.index:
@@ -138,6 +184,8 @@ def collect(asof):
           for t in ['^GSPC','^VIX','^NDX','XLF','SPY','XLY','XLI','XLB','XLP','XLV','XLU']}
     jobs.update({s:lambda s=s:fred(s,asof) for s in MACROS})
     results={};errors={}
+    metadata_path=DATA/'source_metadata.json'
+    previous=json.loads(metadata_path.read_text(encoding='utf8')) if metadata_path.exists() else {}
     def one(k):
         try:return k,jobs[k](),None
         except Exception as e:return k,None,str(e)
@@ -147,7 +195,8 @@ def collect(asof):
             if error:
                 errors[k]=error
                 if cache.exists():
-                    frame=pd.read_csv(cache,index_col=0,parse_dates=[0]);results[k]=(frame.iloc[:,0],{'source_status':'fetch_failed_using_cached_for_diagnostics'})
+                    frame=pd.read_csv(cache,index_col=0,parse_dates=[0])
+                    results[k]=(frame.iloc[:,0],dict(previous.get(k,{}),source_status='fetch_failed_using_cache'))
                 continue
             series,meta=result;series.rename('value').to_csv(cache,index_label='date');results[k]=result
     return results,errors

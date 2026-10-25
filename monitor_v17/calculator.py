@@ -4,7 +4,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from model.dynamic_drawdown import calculate_daily
-from model.financial_factors import calculate_fsx, calculate_fcs, weekly_fcs, align_fcs
+from model.financial_factors import calculate_fsx
+from .data_policy import live_fcs
 from model.common_exit_factors import sector_ratio
 from model.inventory_exit import weekly
 from model.nfr import calculate_nfr
@@ -106,16 +107,8 @@ def evaluate(a,macro,pe,source_meta,asof,failures=()):
     pair=pd.concat([m('DGS10'),m('DGS2')],axis=1).dropna();yy=np.nan
     if len(pair) and (day-pair.index[-1]).days<=5:yy=pair.iloc[-1,0]-pair.iloc[-1,1]
     put('Y-',cmp(yy,'__lt__',0),{'10Y_minus_2Y_pp':yy,'paired_date':pair.index[-1] if len(pair) else None},'Treasury')
-    credit=weekly_fcs(calculate_fcs(m('DCPF3M'),m('DTB3')))
-    credit=credit.loc[credit.index<day]
-    # Rates published T+1 federal business day; use the first equity session thereafter.
-    from pandas.tseries.offsets import CustomBusinessDay
-    from pandas.tseries.holiday import USFederalHolidayCalendar
-    federal=CustomBusinessDay(calendar=USFederalHolidayCalendar())
-    effective=pd.Series({d:d+federal for d in credit.index})
-    aligned=align_fcs(credit.qualified_pp,effective,pd.DatetimeIndex([day]),14).iloc[-1]
-    put('FCS ≥ 1.00pp',None if pd.isna(aligned.value) else aligned.value>=1.,
-        {'FCS_pp':aligned.value,'source_week':aligned.observed_on,'age_days':aligned.age_days},'FCS')
+    credit=live_fcs(m('DCPF3M'),m('DTB3'),day)
+    put('FCS ≥ 1.00pp',cmp(credit['FCS_pp'],'__ge__',1.),credit,'FCS')
     pp=pe.iloc[-1];threshold=pp.P_Avg_260w+pp.P_Std_260w
     put('P+',cmp(pp.P,'__gt__',threshold),{'P':pp.P,'mean260':pp.P_Avg_260w,'sd260':pp.P_Std_260w,'threshold':threshold},'FactSet')
     e2=None if any(pd.isna(pp[k]) for k in ['E','E_4w','E_8w']) else round(pp.E,12)<round(pp.E_4w,12)<round(pp.E_8w,12)

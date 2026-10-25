@@ -5,7 +5,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import exchange_calendars as xc
-from .sources import BASE,DATA,MACROS,collect,factset,write_json
+from .sources import BASE,DATA,MACROS,collect,factset,write_json,cfnai_calendar
+from .data_policy import cfnai_health, POLICY_VERSION
 from .calculator import CONFIG,market_features,pe_weekly,evaluate
 from .report import clean,render,send,delivery_key
 
@@ -29,6 +30,10 @@ def generate(now=None,offline=False):
     else:
         data,errors=collect(asof);facts,fact_errors=factset(asof)
         write_json(DATA/'source_metadata.json',{k:v[1] for k,v in data.items()})
+    if offline:
+        calendar_path=DATA/'cfnai_calendar.json'
+        calendar=json.loads((calendar_path if calendar_path.exists() else BASE/'seed/cfnai_calendar.json').read_text(encoding='utf8'))
+    else:calendar=cfnai_calendar()
     required=['price_'+t for t in ['^GSPC','^VIX','^NDX','XLF','SPY','XLY','XLI','XLB','XLP','XLV','XLU']]+list(MACROS)
     missing=[k for k in required if k not in data]
     if missing:raise RuntimeError('必需来源尚无可用历史：'+', '.join(missing))
@@ -49,7 +54,11 @@ def generate(now=None,offline=False):
         dest=mapping[k]
         prior=meta.get(dest,{}).get('components',{})
         meta[dest]=dict(m,components=dict(prior,**{k:m}))
-        if k in errors:fail.add(dest);warnings.append(f'{k}：获取失败，相关因子标为未知。')
+        if k in errors:
+            if k in ('DCPF3M','DTB3','CFNAIDIFF'):
+                warnings.append(f'{k}：本次获取失败，沿用已取得的数据并显示原日期。')
+            else:
+                fail.add(dest);warnings.append(f'{k}：获取失败，相关因子标为未知。')
         if k.startswith('price_') and (asof not in series.index or pd.isna(series.get(asof))):
             fail.add(dest);warnings.append(f'{k}：{asof.date()} 收盘缺失。')
     # NFCI expiration follows the existing expected weekly publication rule.
@@ -57,13 +66,19 @@ def generate(now=None,offline=False):
     n=data['NFCI'][0];nextobs=n.index[-1]+pd.Timedelta(days=7)
     nextpub=weekly(pd.Series([np.nan],index=[nextobs])).published.iloc[0]
     if nextpub<=asof:fail.add('NFCI');warnings.append('NFCI 已到下一期发布日期，但新一期未取得。')
-    for k in ('CFNAIDIFF','PERMIT','CPIAUCSL'):
+    cf_failed,cf_note=cfnai_health(data['CFNAIDIFF'][0].index[-1],asof,calendar['rows'])
+    meta['CFNAIDIFF']['note']=cf_note
+    meta['CFNAIDIFF']['calendar_source']=calendar['source_url']
+    if cf_failed:fail.add('CFNAIDIFF')
+    if cf_failed or '尚未取得' in cf_note:warnings.append(cf_note)
+    if calendar.get('fetch_failed'):warnings.append('CFNAI 日历本次获取失败，使用已核验的官方日历缓存。')
+    for k in ('PERMIT','CPIAUCSL'):
         if (asof-data[k][0].index[-1]).days>80:
             fail.add(k);warnings.append(f'{k} 最新观察月超过 80 天，数据时效异常。')
     for key in ('DGS10','DGS2','DCPF3M','DTB3'):
         last=data[key][0].last_valid_index()
         if last is None or (asof-last).days>5:
-            warnings.append(f'{key} 最近有效报价较旧；FCS 仍按正式 14 天规则判断。')
+            warnings.append(f'{key} 最近有效报价较旧；FCS 按实际有效日配对求周均，无新有效周则沿用旧周值。')
     seed_pe=json.loads((BASE/'seed/pe_history.json').read_text(encoding='utf8'))
     pe=pe_weekly(seed_pe,facts,spx,cal.sessions.tz_localize(None),asof)
     pp=pe.iloc[-1];meta['FactSet']={k:clean(pp.get(k)) for k in ['published_on','data_asof','source_url','publication_basis']}
@@ -76,9 +91,13 @@ def generate(now=None,offline=False):
     if fact_errors:warnings.append(f'FactSet 有 {len(fact_errors)} 个待补周，已记录下载失败原因；没有以其他 PE 或固定值代替。')
     macro={k:data[k][0] for k in MACROS}
     r=evaluate(a,macro,pe,meta,asof,fail)
+    credit=r['factors']['FCS ≥ 1.00pp']['inputs']
+    if credit['age_days'] is not None and credit['age_days']>14:
+        warnings.append(f"FCS 已 {credit['age_days']} 天无更新，沿用最近有效周值；该周有 {credit['valid_days']} 天配对报价。")
     meanings={}
     for rule in CONFIG['triggers']:meanings.update(rule.get('factor_meanings',{}))
-    meanings.update({'HPG > 0':'住宅许可最近三个月均值÷去年同期三个月均值−1，严格大于0。',
+    meanings.update({'FCS ≥ 1.00pp':'3个月AA金融商业票据DCPF3M减3个月国库券DTB3；先配对同日报价，再按完整周求均值。有几天有效报价就用几天，至少1天；整周无配对报价则沿用最近有效周，不按14天清空。周均≥1.00个百分点成立。',
+                     'HPG > 0':'住宅许可最近三个月均值÷去年同期三个月均值−1，严格大于0。',
                      'Sσ_200 ≤ -2σ':'标普价格减200日均线，再除以最近252日同类偏离的样本标准差，≤−2。'})
     for k,d in r['factors'].items():d['meaning']=meanings.get(k,'')
     unknown=[k for k,d in r['factors'].items() if d['value'] is None]
@@ -93,7 +112,8 @@ def generate(now=None,offline=False):
         formulas={x['name']:expression({'all':x['all']}) for x in CONFIG['triggers']},
         generated_at=now.isoformat(),code_commit=os.environ.get('GITHUB_SHA','local'),
         session_note='使用最近已完成的美股交易日；休市日重复标明上一交易日截面。',
-        download_errors=errors,factset_download_errors=fact_errors,run_mode='offline_validation' if offline else 'live')
+        download_errors=errors,factset_download_errors=fact_errors,run_mode='offline_validation' if offline else 'live',
+        data_policy_version=POLICY_VERSION)
     write_json(DATA/'latest_pe_weekly.json',clean(pe.reset_index(names='week').to_dict('records')))
     episodes.to_csv(DATA/'completed_drawdowns.csv',index=False)
     return clean(r)

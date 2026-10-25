@@ -1,0 +1,60 @@
+{
+  "rows": [
+    {
+      "published_on": "2025-12-22",
+      "observed_on": "2025-09-01"
+    },
+    {
+      "published_on": "2026-01-26",
+      "observed_on": "2025-11-01"
+    },
+    {
+      "published_on": "2026-02-23",
+      "observed_on": "2026-01-01"
+    },
+    {
+      "published_on": "2026-03-23",
+      "observed_on": "2026-02-01"
+    },
+    {
+      "published_on": "2026-04-23",
+      "observed_on": "2026-03-01"
+    },
+    {
+      "published_on": "2026-05-26",
+      "observed_on": "2026-04-01"
+    },
+    {
+      "published_on": "2026-06-25",
+      "observed_on": "2026-05-01"
+    },
+    {
+      "published_on": "2026-07-23",
+      "observed_on": "2026-06-01"
+    },
+    {
+      "published_on": "2026-08-24",
+      "observed_on": "2026-07-01"
+    },
+    {
+      "published_on": "2026-09-21",
+      "observed_on": "2026-08-01"
+    },
+    {
+      "published_on": "2026-10-26",
+      "observed_on": "2026-09-01"
+    },
+    {
+      "published_on": "2026-11-23",
+      "observed_on": "2026-10-01"
+    },
+    {
+      "published_on": "2026-12-21",
+      "observed_on": "2026-11-01"
+    }
+  ],
+  "source_url": "https://www.chicagofed.org/research/data/data-release-calendar",
+  "sha256": "1377412c30fbc11d2a0ecfed418b3ddbe7970bdcb1cefd16ee110a9ff8ec6b86",
+  "raw_file": "data/v17/raw/cfnai_calendar_1377412c30fbc11d.bin",
+  "retrieved_at": "2026-10-25T09:44:30.367067+00:00"
+}

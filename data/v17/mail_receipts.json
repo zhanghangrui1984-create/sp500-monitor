@@ -64,5 +64,11 @@
     "receiver_masked": "zha***@gmail.com",
     "subject": "【标普500 v17·异常】2026-10-23 ",
     "sent_at": "2026-10-25T00:25:37.581694+00:00"
+  },
+  "2026-10-26_2026-10-23_hybrid-pe-split-financial-exit-v17-20261016_ok": {
+    "smtp_accepted": true,
+    "receiver_masked": "zha***@gmail.com",
+    "subject": "【标普500 v17·日报】2026-10-23 ",
+    "sent_at": "2026-10-26T00:31:11.443943+00:00"
   }
 }

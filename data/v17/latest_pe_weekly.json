@@ -34338,5 +34338,22 @@
     "E_8w": 385.498,
     "P_Avg_260w": 19.876838301346503,
     "P_Std_260w": 1.9678657418719303
+  },
+  {
+    "week": "2026-10-19T00:00:00",
+    "effective_on": "2026-10-26",
+    "published_on": "2026-10-23",
+    "data_asof": "2026-10-22",
+    "E": 409.8090909090909,
+    "P": 18.7,
+    "source": "FactSet",
+    "source_url": "https://advantage.factset.com/hubfs/Website/Resources%20Section/Research%20Desk/Earnings%20Insight/EarningsInsight_102326.pdf",
+    "source_vintage": null,
+    "publication_basis": "actual_publication",
+    "original_report_id": null,
+    "E_4w": 401.25677083333335,
+    "E_8w": 394.4382653061224,
+    "P_Avg_260w": 19.86760753211573,
+    "P_Std_260w": 1.9677349390579948
   }
 ]

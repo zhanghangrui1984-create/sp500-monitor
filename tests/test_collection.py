@@ -18,7 +18,41 @@ class CollectionTests(unittest.TestCase):
         self.assertEqual(r['valid_days'],1);self.assertAlmostEqual(r['FCS_pp'],0)
         r=live_fcs(cp,tb,'2026-11-23')
         self.assertEqual(r['valid_days'],1);self.assertEqual(r['age_days'],31)
-        self.assertAlmostEqual(r['FCS_pp'],0)
+        self.assertTrue(pd.isna(r['FCS_pp']))
+        self.assertAlmostEqual(r['last_valid_FCS_pp'],0)
+
+    def test_fcs_day14_valid_day15_unknown_and_new_single_quote_recovers(self):
+        dates=pd.to_datetime(['2020-03-24','2020-03-25','2020-03-26','2020-05-07'])
+        cp=pd.Series([2.34,2.57,2.49,.10],index=dates)
+        tb=pd.Series(0.,index=dates)
+        valid=live_fcs(cp,tb,'2020-04-10')
+        self.assertEqual(valid['age_days'],14)
+        self.assertAlmostEqual(valid['FCS_pp'],2.4666666667)
+        for day,age in [('2020-04-11',15),('2020-04-29',33)]:
+            stale=live_fcs(cp,tb,day)
+            self.assertEqual(stale['age_days'],age)
+            self.assertTrue(pd.isna(stale['FCS_pp']))
+            self.assertAlmostEqual(stale['last_valid_FCS_pp'],2.4666666667)
+            self.assertEqual(stale['source_week'],pd.Timestamp('2020-03-27'))
+        new=live_fcs(cp,tb,'2020-05-11')
+        self.assertEqual(new['valid_days'],1)
+        self.assertAlmostEqual(new['FCS_pp'],.10)
+        self.assertEqual(new['source_week'],pd.Timestamp('2020-05-08'))
+
+    def test_stale_high_fcs_cannot_confirm_financial_exit(self):
+        from monitor_v17.calculator import cmp, CONFIG
+        from monitor_v17.shared_core import triggers_from_factors
+        day=pd.Timestamp('2020-04-29')
+        cp=pd.Series([2.5],index=pd.to_datetime(['2020-03-26']))
+        tb=pd.Series([.1],index=cp.index)
+        credit=live_fcs(cp,tb,day)
+        factor=cmp(credit['FCS_pp'],'__ge__',1.)
+        self.assertIsNone(factor)
+        rule=next(r for r in CONFIG['triggers'] if 'FCS ≥ 1.00pp' in r['all'])
+        values={name:pd.Series([True],index=[day],dtype='boolean') for name in rule['all']}
+        values['FCS ≥ 1.00pp']=pd.Series([factor],index=[day],dtype='boolean')
+        trigger=triggers_from_factors(pd.DataFrame(values),[rule]).iloc[0,0]
+        self.assertTrue(pd.isna(trigger))
 
     def test_fcs_never_pairs_different_dates_or_uses_unfinished_week(self):
         cp=pd.Series([5.,7.],index=pd.to_datetime(['2026-10-12','2026-10-20']))

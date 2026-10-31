@@ -7,20 +7,24 @@ from pandas.tseries.offsets import CustomBusinessDay
 from pandas.tseries.holiday import USFederalHolidayCalendar
 from model.financial_factors import calculate_fcs, weekly_fcs
 
-POLICY_VERSION='live-data-20261025'
+POLICY_VERSION='live-data-20261031-fcs14d'
+FCS_MAX_AGE_DAYS=14
 CFNAI_CALENDAR_URL='https://www.chicagofed.org/research/data/data-release-calendar'
 
 def live_fcs(cp, treasury, day):
-    """Use every paired quote in a completed week, then carry until replaced."""
+    """Use at least one paired quote; expire 14 calendar days after source Friday."""
     day=pd.Timestamp(day)
     w=weekly_fcs(calculate_fcs(cp.loc[:day],treasury.loc[:day]),min_count=1)
     federal=CustomBusinessDay(calendar=USFederalHolidayCalendar())
     w['available_on']=[d+federal for d in w.index]
     w=w.loc[(w.available_on<=day)&(w.index<day)&w.qualified_pp.notna()]
     if w.empty:
-        return {'FCS_pp':np.nan,'source_week':None,'age_days':None,'valid_days':0,'available_on':None}
+        return {'FCS_pp':np.nan,'last_valid_FCS_pp':np.nan,'source_week':None,
+                'age_days':None,'valid_days':0,'available_on':None}
     row=w.iloc[-1];week=w.index[-1]
-    return {'FCS_pp':row.qualified_pp,'source_week':week,'age_days':(day-week).days,
+    age=(day-week).days
+    return {'FCS_pp':row.qualified_pp if age<=FCS_MAX_AGE_DAYS else np.nan,
+            'last_valid_FCS_pp':row.qualified_pp,'source_week':week,'age_days':age,
             'valid_days':int(row.valid_days),'available_on':row.available_on}
 
 def parse_cfnai_calendar(body):

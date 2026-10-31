@@ -16,7 +16,7 @@ FIELDS={'S':'标普收盘','S_lag_126':'126交易日前收盘','S_dn_126':'126�
         'NSX':'纳指相对标普超涨','NFCI_4w':'4周前NFCI','NFCI_26w':'26周前NFCI','change':'NFCI变化',
         'NFCI_high52':'52周最高NFCI','low36':'36月低点','mean3':'许可3月均值','previous_mean3':'去年同期均值',
         'CPI_y_pp':'CPI同比','10Y_minus_2Y_pp':'10年−2年收益率','paired_date':'同日报价日期',
-        'FCS_pp':'融资利差','source_week':'来源周','age_days':'距来源周天数','valid_days':'有效报价天数','available_on':'可用日期','P':'预期PE',
+        'FCS_pp':'有效融资利差','last_valid_FCS_pp':'最后有效周值（仅供核查）','source_week':'来源周','age_days':'距来源周天数','valid_days':'有效报价天数','available_on':'可用日期','P':'预期PE',
         'mean260':'260周均值','sd260':'260周标准差','threshold':'PE上界','E':'预期EPS','E_4w':'4周前EPS','E_8w':'8周前EPS'}
 
 def format_input(k,v):
@@ -24,7 +24,7 @@ def format_input(k,v):
     if isinstance(v,(float,int)):
         if k in ('S_drawdown_pct','DD_P95','DD_P99','FSX','NSX','HPG'):return f'{v*100:.4f}%'
         if k in ('CPI_y_pp','CYCDEF_change_pct'):return f'{v:.4f}%'
-        if k in ('FCS_pp','10Y_minus_2Y_pp'):return f'{v:.4f}个百分点'
+        if k in ('FCS_pp','last_valid_FCS_pp','10Y_minus_2Y_pp'):return f'{v:.4f}个百分点'
         return f'{v:.6g}'
     return str(v)
 def clean(value):

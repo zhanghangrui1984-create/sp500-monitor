@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import exchange_calendars as xc
 from .sources import BASE,DATA,MACROS,collect,factset,write_json,cfnai_calendar
-from .data_policy import cfnai_health, POLICY_VERSION
+from .data_policy import cfnai_health, POLICY_VERSION, FCS_MAX_AGE_DAYS
 from .calculator import CONFIG,market_features,pe_weekly,evaluate
 from .report import clean,render,send,delivery_key
 
@@ -78,7 +78,8 @@ def generate(now=None,offline=False):
     for key in ('DGS10','DGS2','DCPF3M','DTB3'):
         last=data[key][0].last_valid_index()
         if last is None or (asof-last).days>5:
-            warnings.append(f'{key} 最近有效报价较旧；FCS 按实际有效日配对求周均，无新有效周则沿用旧周值。')
+            note='；FCS 仅在来源周末14个日历日内沿用，超期即未知。' if key in ('DCPF3M','DTB3') else '。'
+            warnings.append(f'{key} 最近有效报价较旧'+note)
     seed_pe=json.loads((BASE/'seed/pe_history.json').read_text(encoding='utf8'))
     pe=pe_weekly(seed_pe,facts,spx,cal.sessions.tz_localize(None),asof)
     pp=pe.iloc[-1];meta['FactSet']={k:clean(pp.get(k)) for k in ['published_on','data_asof','source_url','publication_basis']}
@@ -92,11 +93,13 @@ def generate(now=None,offline=False):
     macro={k:data[k][0] for k in MACROS}
     r=evaluate(a,macro,pe,meta,asof,fail)
     credit=r['factors']['FCS ≥ 1.00pp']['inputs']
-    if credit['age_days'] is not None and credit['age_days']>14:
-        warnings.append(f"FCS 已 {credit['age_days']} 天无更新，沿用最近有效周值；该周有 {credit['valid_days']} 天配对报价。")
+    if credit['age_days'] is not None and credit['age_days']>FCS_MAX_AGE_DAYS:
+        reason=f"FCS 距最后有效来源周末已 {credit['age_days']} 个日历日，超过14天，标为未知；旧周值仅供核查，不参与信号。"
+        warnings.append(reason)
+        r['factors']['FCS ≥ 1.00pp']['reason']=reason
     meanings={}
     for rule in CONFIG['triggers']:meanings.update(rule.get('factor_meanings',{}))
-    meanings.update({'FCS ≥ 1.00pp':'3个月AA金融商业票据DCPF3M减3个月国库券DTB3；先配对同日报价，再按完整周求均值。有几天有效报价就用几天，至少1天；整周无配对报价则沿用最近有效周，不按14天清空。周均≥1.00个百分点成立。',
+    meanings.update({'FCS ≥ 1.00pp':'3个月AA金融商业票据DCPF3M减3个月国库券DTB3；先配对同日报价，再按完整周求均值。有几天有效报价就用几天，至少1天；空周仅在距来源周末14个日历日内沿用，第15天起未知，不能据此确认金融离场。有效周均≥1.00个百分点成立。',
                      'HPG > 0':'住宅许可最近三个月均值÷去年同期三个月均值−1，严格大于0。',
                      'Sσ_200 ≤ -2σ':'标普价格减200日均线，再除以最近252日同类偏离的样本标准差，≤−2。'})
     for k,d in r['factors'].items():d['meaning']=meanings.get(k,'')

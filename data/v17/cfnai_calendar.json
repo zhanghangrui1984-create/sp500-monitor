@@ -54,7 +54,7 @@
     }
   ],
   "source_url": "https://www.chicagofed.org/research/data/data-release-calendar",
-  "sha256": "a57548f1170adcac1512f3c0aef9f3fb7eae1d9e971cc68b89a2c82011bc3ef3",
-  "raw_file": "data/v17/raw/cfnai_calendar_a57548f1170adcac.bin",
-  "retrieved_at": "2026-11-01T01:18:50.940395+00:00"
+  "sha256": "23321d5b9bae58a54feb96b61c5c36a7a0eeabedf60a2f08d2f36eb70d8e60be",
+  "raw_file": "data/v17/raw/cfnai_calendar_23321d5b9bae58a5.bin",
+  "retrieved_at": "2026-11-02T01:40:33.981290+00:00"
 }

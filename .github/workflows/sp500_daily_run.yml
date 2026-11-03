@@ -46,11 +46,13 @@ jobs:
       - name: 计算因子并发送邮件
         env:
           SEND_EMAIL: ${{ github.event_name == 'schedule' || inputs.send_email }}
+          SP500_ARCHIVE_DEPLOY_KEY: ${{ secrets.SP500_ARCHIVE_DEPLOY_KEY }}
+          SP500_ARCHIVE_CHECK_TOKEN: ${{ github.token }}
         run: |
           if [ "$SEND_EMAIL" = "true" ]; then
-            python -m monitor_v17.main
+            python -m monitor_v17.main --archive-private
           else
-            python -m monitor_v17.main --no-email
+            python -m monitor_v17.main --no-email --archive-private
           fi
       - name: 发送运行失败通知
         if: failure() && (github.event_name == 'schedule' || inputs.send_email)
@@ -61,8 +63,13 @@ jobs:
         with:
           name: sp500-v17-${{ github.run_id }}
           path: |
-            reports/
-            data/v17/
+            reports/*.html
+            reports/*.json
+            reports/*.docx
+            data/v17/*.csv
+            data/v17/*.json
+            data/v17/daily/
+            data/v17/raw/
             !data/v17/raw/factset_*
           retention-days: 90
       - name: 持久化数据与邮件回执
@@ -70,7 +77,7 @@ jobs:
         run: |
           if [ ! -d data/v17 ]; then exit 0; fi
           mkdir -p persisted/data/v17
-          rsync -a --exclude raw/ data/v17/ persisted/data/v17/
+          rsync -a --exclude raw/ --exclude deliverables/ data/v17/ persisted/data/v17/
           cd persisted
           git config user.name 'GitHub Actions Bot'
           git config user.email 'github-actions@github.com'

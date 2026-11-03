@@ -9,6 +9,7 @@ from .sources import BASE,DATA,MACROS,collect,factset,write_json,cfnai_calendar
 from .data_policy import cfnai_health, POLICY_VERSION, FCS_MAX_AGE_DAYS
 from .calculator import CONFIG,market_features,pe_weekly,evaluate
 from .report import clean,render,send,delivery_key
+from .daily_report import FORMAT_VERSION,build_deliverables
 
 def expression(node):
     if isinstance(node,str):return node
@@ -122,18 +123,23 @@ def generate(now=None,offline=False):
     return clean(r)
 
 def main():
-    p=argparse.ArgumentParser();p.add_argument('--no-email',action='store_true');p.add_argument('--offline',action='store_true');p.add_argument('--now');a=p.parse_args()
+    p=argparse.ArgumentParser();p.add_argument('--no-email',action='store_true');p.add_argument('--offline',action='store_true');p.add_argument('--now');p.add_argument('--archive-private',action='store_true');a=p.parse_args()
     try:r=generate(a.now,a.offline)
     except Exception as e:
         # No raw request URLs or environment contents in reports/logs (API keys may be embedded).
         r={'model_version':CONFIG['version'],'status':'failed','asof':'未知',
            'generated_at':datetime.now(timezone.utc).isoformat(),'fatal_error':type(e).__name__+': '+str(e)[:220],
            'decision':'本次模型未完成有效计算，维持原状态。','warnings':['请检查工作流和数据源；本报告不代表无触发。']}
+    r['report_format_version']=FORMAT_VERSION
     out=BASE/'reports';out.mkdir(exist_ok=True);body=render(r)
     (out/'SP500_v17_latest.html').write_text(body,encoding='utf8');write_json(out/'SP500_v17_latest.json',r)
     write_json(DATA/'latest_report.json',r)
     daykey=datetime.now(timezone.utc).strftime('%Y-%m-%d')
     write_json(DATA/'daily'/f'{daykey}.json',r)
+    docx,archive=build_deliverables(r,DATA,out)
+    if a.archive_private:
+        from .private_archive import publish
+        publish(r,docx,archive,out)
     key=delivery_key(r,daykey)
     sentfile=DATA/'mail_receipts.json';sent=json.loads(sentfile.read_text(encoding='utf8')) if sentfile.exists() else {}
     oldkey=daykey+'_'+CONFIG['version']+'_'+r['status']
@@ -141,7 +147,7 @@ def main():
         sent[key]=sent[oldkey];write_json(sentfile,sent)
     if not a.no_email and key not in sent:
         try:
-            receipt=send(r,body);receipt['sent_at']=datetime.now(timezone.utc).isoformat();sent[key]=receipt
+            receipt=send(r,body,docx);receipt['sent_at']=datetime.now(timezone.utc).isoformat();sent[key]=receipt
             write_json(sentfile,sent);write_json(out/'delivery_receipt.json',receipt);print('SMTP accepted report for configured mailbox.')
         except Exception as e:
             print('EMAIL FAILED: '+type(e).__name__);return 2

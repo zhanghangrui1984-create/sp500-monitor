@@ -7,9 +7,47 @@ from pandas.tseries.offsets import CustomBusinessDay
 from pandas.tseries.holiday import USFederalHolidayCalendar
 from model.financial_factors import calculate_fcs, weekly_fcs
 
-POLICY_VERSION='live-data-20261031-fcs14d'
+POLICY_VERSION='live-data-20261105-cpi-gap1-fcs14d'
 FCS_MAX_AGE_DAYS=14
 CFNAI_CALENDAR_URL='https://www.chicagofed.org/research/data/data-release-calendar'
+CPI_GAP_POLICY='single_missing_month_adjacent_original_mean'
+
+
+def cpi_monthly(series,asof=None):
+    """Fill isolated CPI months from their two available original neighbours only.
+
+    Callers supply the release-filtered vintage for the calculation date. The
+    optional cutoff also excludes future observation months. Never mutate the
+    original series, extrapolate an edge, chain estimates or fill a longer gap.
+    """
+    raw=series.copy().astype(float).sort_index()
+    if raw.index.has_duplicates or not isinstance(raw.index,pd.DatetimeIndex):
+        raise ValueError('CPI needs unique monthly dates')
+    if any(raw.index.day!=1):raise ValueError('CPI observations must use month-start dates')
+    if asof is not None:raw=raw.loc[:pd.Timestamp(asof)]
+    if raw.empty:raise ValueError('No CPI observations available')
+    if ((raw.notna())&((~np.isfinite(raw))|(raw<=0))).any():
+        raise ValueError('CPI observations must be positive finite index values')
+    raw=raw.reindex(pd.date_range(raw.index.min(),raw.index.max(),freq='MS'))
+    left,right=raw.shift(1),raw.shift(-1)
+    fill=raw.isna()&left.notna()&right.notna()
+    frame=pd.DataFrame({'raw_value':raw,'calculation_value':raw.mask(fill,(left+right)/2),
+                        'is_imputed':fill},index=raw.index)
+    frame.index.name='month'
+    return frame
+
+
+def cpi_gap_records(frame):
+    """Explicit provenance for computed values, separate from official inputs."""
+    rows=[]
+    for month in frame.index[frame.is_imputed]:
+        left=month-pd.DateOffset(months=1);right=month+pd.DateOffset(months=1)
+        rows.append({'month':str(month.date()),'raw_value':None,
+                     'calculation_value':float(frame.loc[month,'calculation_value']),
+                     'method':CPI_GAP_POLICY,'left_month':str(left.date()),
+                     'left_value':float(frame.loc[left,'raw_value']),
+                     'right_month':str(right.date()),'right_value':float(frame.loc[right,'raw_value'])})
+    return rows
 
 def live_fcs(cp, treasury, day):
     """Use at least one paired quote; expire 14 calendar days after source Friday."""

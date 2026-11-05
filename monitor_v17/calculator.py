@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from model.dynamic_drawdown import calculate_daily
 from model.financial_factors import calculate_fsx
-from .data_policy import live_fcs
+from .data_policy import live_fcs,cpi_monthly
 from model.common_exit_factors import sector_ratio
 from model.inventory_exit import weekly
 from model.nfr import calculate_nfr
@@ -100,10 +100,16 @@ def evaluate(a,macro,pe,source_meta,asof,failures=()):
     put('ERX达标',er.ERX_qualified,{'CFNAIDIFF':er.CFNAIDIFF,'low36':er.rolling_low,'ERX':er.ERX},'CFNAIDIFF')
     hp=calculate_hpg(m('PERMIT')).iloc[-1]
     put('HPG > 0',hp.HPG_positive,{'PERMIT':hp.PERMIT,'mean3':hp.mean3,'previous_mean3':hp.same_period_last_year_mean3,'HPG':hp.HPG},'PERMIT')
-    c=m('CPIAUCSL');c=c.reindex(pd.date_range(c.index.min(),c.index.max(),freq='MS'))
+    cpi=cpi_monthly(m('CPIAUCSL'),day);c=cpi.calculation_value
     cy=100*(c/c.shift(12)-1).iloc[-1]
-    put('CPI_y ≥ 5.39%',cmp(cy,'__ge__',5.39),{'CPI_y_pp':cy},'CPIAUCSL')
-    put('CPI_y < 0%',cmp(cy,'__lt__',0),{'CPI_y_pp':cy},'CPIAUCSL')
+    base_month=c.index[-1]-pd.DateOffset(months=12)
+    cpi_inputs={'CPI_y_pp':cy,'CPI_month':str(c.index[-1].date()),
+                'CPI_index':c.iloc[-1],'CPI_base_month':str(base_month.date()),
+                'CPI_base_index':c.get(base_month,np.nan),
+                'CPI_index_imputed':bool(cpi.is_imputed.iloc[-1]),
+                'CPI_base_index_imputed':bool(cpi.is_imputed.get(base_month,False))}
+    put('CPI_y ≥ 5.39%',cmp(cy,'__ge__',5.39),dict(cpi_inputs),'CPIAUCSL')
+    put('CPI_y < 0%',cmp(cy,'__lt__',0),dict(cpi_inputs),'CPIAUCSL')
     pair=pd.concat([m('DGS10'),m('DGS2')],axis=1).dropna();yy=np.nan
     if len(pair) and (day-pair.index[-1]).days<=5:yy=pair.iloc[-1,0]-pair.iloc[-1,1]
     put('Y-',cmp(yy,'__lt__',0),{'10Y_minus_2Y_pp':yy,'paired_date':pair.index[-1] if len(pair) else None},'Treasury')

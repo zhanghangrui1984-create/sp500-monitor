@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import exchange_calendars as xc
 from .sources import BASE,DATA,MACROS,collect,factset,write_json,cfnai_calendar
-from .data_policy import cfnai_health, POLICY_VERSION, FCS_MAX_AGE_DAYS
+from .data_policy import cfnai_health, POLICY_VERSION, FCS_MAX_AGE_DAYS,cpi_monthly,cpi_gap_records,CPI_GAP_POLICY
 from .calculator import CONFIG,market_features,pe_weekly,evaluate
 from .report import clean,render,send,delivery_key
 from .daily_report import FORMAT_VERSION,build_deliverables
@@ -92,6 +92,11 @@ def generate(now=None,offline=False):
     meta['FactSet']['note']=f'当前260周估值窗口：历史美联储补缺{fed_count}周；上线前后沿用上期FactSet共{carry_count}周。'
     if fact_errors:warnings.append(f'FactSet 有 {len(fact_errors)} 个待补周，已记录下载失败原因；没有以其他 PE 或固定值代替。')
     macro={k:data[k][0] for k in MACROS}
+    cpi=cpi_monthly(macro['CPIAUCSL'],asof);cpi_fills=cpi_gap_records(cpi)
+    cpi.to_csv(DATA/'CPIAUCSL_calculation.csv',index_label='month')
+    write_json(DATA/'cpi_imputations.json',{'policy':CPI_GAP_POLICY,'asof':str(asof.date()),
+               'source_file':'CPIAUCSL.csv','calculation_file':'CPIAUCSL_calculation.csv','fills':cpi_fills})
+    meta['CPIAUCSL'].update(imputation_policy=CPI_GAP_POLICY,imputed_months=cpi_fills)
     r=evaluate(a,macro,pe,meta,asof,fail)
     credit=r['factors']['FCS ≥ 1.00pp']['inputs']
     if credit['age_days'] is not None and credit['age_days']>FCS_MAX_AGE_DAYS:
@@ -104,6 +109,8 @@ def generate(now=None,offline=False):
                      'HPG > 0':'住宅许可最近三个月均值÷去年同期三个月均值−1，严格大于0。',
                      'Sσ_200 ≤ -2σ':'标普价格减200日均线，再除以最近252日同类偏离的样本标准差，≤−2。'})
     for k,d in r['factors'].items():d['meaning']=meanings.get(k,'')
+    for k in ('CPI_y ≥ 5.39%','CPI_y < 0%'):
+        r['factors'][k]['meaning']+=' 单个月份缺口且前后相邻月原值均已取得时，用两原值算术平均补入计算序列；补值有标记，官方原值保留。'
     unknown=[k for k,d in r['factors'].items() if d['value'] is None]
     if unknown:warnings.append('未知因子：'+'、'.join(unknown))
     exits=[x['name'] for x in CONFIG['triggers'] if x['side']=='exit'];entries=[x['name'] for x in CONFIG['triggers'] if x['side']=='entry']

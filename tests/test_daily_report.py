@@ -63,6 +63,9 @@ class DailyReportTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp);data=root/'data';data.mkdir();(data/'raw').mkdir()
             (data/'DCPF3M.csv').write_text('date,value\n2026-10-20,4.08\n')
+            (data/'CPIAUCSL_calculation.csv').write_text('month,raw_value,calculation_value,is_imputed\n2025-10-01,,324.654,True\n')
+            cpi_proof={'fills':[{'month':'2025-10-01','raw_value':None,'calculation_value':324.654}]}
+            (data/'cpi_imputations.json').write_text(json.dumps(cpi_proof),encoding='utf-8')
             (data/'mail_receipts.json').write_text('{"private":"not part of numerical database"}')
             (data/'raw/sample.bin').write_bytes(b'public response')
             (data/'raw/factset_example.bin').write_bytes(b'full licensed PDF')
@@ -80,6 +83,8 @@ class DailyReportTests(unittest.TestCase):
                 self.assertEqual(json.loads(z.read('snapshot.json')),s)
                 self.assertEqual(z.read(docx.name),docx.read_bytes())
                 self.assertIn('database/DCPF3M.csv',z.namelist());self.assertIn('raw/sample.bin',z.namelist())
+                self.assertIn('database/CPIAUCSL_calculation.csv',z.namelist())
+                self.assertEqual(json.loads(z.read('database/cpi_imputations.json')),cpi_proof)
                 self.assertNotIn('database/mail_receipts.json',z.namelist())
                 self.assertNotIn('raw/factset_example.bin',z.namelist())
                 self.assertEqual(json.loads(z.read('raw_evidence_inventory.json'))['excluded_full_factset_reports'],['data/v17/raw/factset_example.bin'])

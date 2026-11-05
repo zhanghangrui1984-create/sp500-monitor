@@ -221,7 +221,7 @@ def package_data(r,data,docx,destination):
     members['factor_values.csv']=csv_bytes([{'factor':k,'input':key,'value':value,'missing':value is None}
         for k,d in r.get('factors',{}).items() for key,value in d.get('inputs',{}).items()],['factor','input','value','missing'])
     files=[p for p in data.glob('*.csv') if p.is_file()]
-    files += [data/n for n in ['source_metadata.json','factset_reports.json','cfnai_calendar.json','latest_pe_weekly.json','latest_report.json'] if (data/n).is_file()]
+    files += [data/n for n in ['source_metadata.json','factset_reports.json','cfnai_calendar.json','cpi_imputations.json','latest_pe_weekly.json','latest_report.json'] if (data/n).is_file()]
     for p in files:members['database/'+p.name]=p.read_bytes()
     references=set()
     def collect(value):

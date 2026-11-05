@@ -1,0 +1,18 @@
+{
+  "policy": "single_missing_month_adjacent_original_mean",
+  "asof": "2026-11-04",
+  "source_file": "CPIAUCSL.csv",
+  "calculation_file": "CPIAUCSL_calculation.csv",
+  "fills": [
+    {
+      "month": "2025-10-01",
+      "raw_value": null,
+      "calculation_value": 324.654,
+      "method": "single_missing_month_adjacent_original_mean",
+      "left_month": "2025-09-01",
+      "left_value": 324.245,
+      "right_month": "2025-11-01",
+      "right_value": 325.063
+    }
+  ]
+}

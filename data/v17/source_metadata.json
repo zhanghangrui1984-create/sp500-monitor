@@ -1,88 +1,88 @@
 {
   "price_^GSPC": {
-    "sha256": "804ad91225207c306025462291901787a3797f447c4c7b198dd0e3305a88dabd",
-    "raw_file": "data/v17/raw/yahoo_GSPC_804ad91225207c30.bin",
-    "retrieved_at": "2026-11-07T02:08:04.538580+00:00",
+    "sha256": "9cb224d610d3b740acced00d2ca8de110b44b02c000c2bb6cd1ba12dae7cfded",
+    "raw_file": "data/v17/raw/yahoo_GSPC_9cb224d610d3b740.bin",
+    "retrieved_at": "2026-11-08T01:39:40.188154+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": false
   },
   "price_^VIX": {
-    "sha256": "d620c9a32444fb9bed3fec9f0de303ed680fa4d3aca634676f00c34dddd47140",
-    "raw_file": "data/v17/raw/yahoo_VIX_d620c9a32444fb9b.bin",
-    "retrieved_at": "2026-11-07T02:08:04.657843+00:00",
+    "sha256": "42226baa6e99fad659ed950d4b2dd306d7797d6be60fdbbc353501529f47055a",
+    "raw_file": "data/v17/raw/yahoo_VIX_42226baa6e99fad6.bin",
+    "retrieved_at": "2026-11-08T01:39:40.205687+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5EVIX?period1=1420070400&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": false
   },
   "price_^NDX": {
-    "sha256": "b6384ff044665afb446c4468f7a3426b658c4bc0a2a284e7ddf343944310e702",
-    "raw_file": "data/v17/raw/yahoo_NDX_b6384ff044665afb.bin",
-    "retrieved_at": "2026-11-07T02:08:04.512571+00:00",
+    "sha256": "a484f0f3c5ea1217eec3c548a2334a88ddccc79b6fd6badb706615507a1cf7db",
+    "raw_file": "data/v17/raw/yahoo_NDX_a484f0f3c5ea1217.bin",
+    "retrieved_at": "2026-11-08T01:39:40.180953+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/%5ENDX?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": false
   },
   "price_XLF": {
-    "sha256": "b2b2f8d9f6b9537e0bdccecb4c9e09f5c73bf3b715ca09ba061dbc4da977269b",
-    "raw_file": "data/v17/raw/yahoo_XLF_b2b2f8d9f6b9537e.bin",
-    "retrieved_at": "2026-11-07T02:08:04.557403+00:00",
+    "sha256": "5ef09ebd9385b09316a21cf6f6582ded351e0279dc5134eca6e834896884ad56",
+    "raw_file": "data/v17/raw/yahoo_XLF_5ef09ebd9385b093.bin",
+    "retrieved_at": "2026-11-08T01:39:40.227571+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLF?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": true
   },
   "price_SPY": {
-    "sha256": "c024894e5c475de6522fb0a303b4bdb0ea20512594b666ba1ed2b14be8884e1c",
-    "raw_file": "data/v17/raw/yahoo_SPY_c024894e5c475de6.bin",
-    "retrieved_at": "2026-11-07T02:08:04.528817+00:00",
+    "sha256": "843618f521e6b7485db4d68727597c648ce5c7305a70c0f2c60e98eca11caa50",
+    "raw_file": "data/v17/raw/yahoo_SPY_843618f521e6b748.bin",
+    "retrieved_at": "2026-11-08T01:39:40.217588+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/SPY?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": true
   },
   "price_XLY": {
-    "sha256": "38a98b4730b69e929e98daad7140e08e66013771e6211305678d45f062b9bb92",
-    "raw_file": "data/v17/raw/yahoo_XLY_38a98b4730b69e92.bin",
-    "retrieved_at": "2026-11-07T02:08:04.812535+00:00",
+    "sha256": "521246217963c82d072144323722ccd6e2e82a50cc02e91f02b5ac2533d66a5a",
+    "raw_file": "data/v17/raw/yahoo_XLY_521246217963c82d.bin",
+    "retrieved_at": "2026-11-08T01:39:40.320036+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLY?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": true
   },
   "price_XLI": {
-    "sha256": "fc01917298565c9e46a672201f3a6c338f860c30b18d34e01625a44ad345e8d4",
-    "raw_file": "data/v17/raw/yahoo_XLI_fc01917298565c9e.bin",
-    "retrieved_at": "2026-11-07T02:08:04.840487+00:00",
+    "sha256": "d85e9d05cea337181f4b792994d1311ca974ed893db9b9977a262546b1964f5c",
+    "raw_file": "data/v17/raw/yahoo_XLI_d85e9d05cea33718.bin",
+    "retrieved_at": "2026-11-08T01:39:40.287860+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLI?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": true
   },
   "price_XLB": {
-    "sha256": "e511c3411fdddd53a30c59bbab5f93d1d5cebe3d22e1efae71bc34bf7dd18770",
-    "raw_file": "data/v17/raw/yahoo_XLB_e511c3411fdddd53.bin",
-    "retrieved_at": "2026-11-07T02:08:04.829900+00:00",
+    "sha256": "29fbfa02290c9a8eb716b69e6bf15a9a1efba9450f37284fc7b31fb6d15df620",
+    "raw_file": "data/v17/raw/yahoo_XLB_29fbfa02290c9a8e.bin",
+    "retrieved_at": "2026-11-08T01:39:40.316890+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLB?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": true
   },
   "price_XLP": {
-    "sha256": "a03941c9ffdb6319a47427264c43cad1b4a478bcf95bd206048e47d46376bee8",
-    "raw_file": "data/v17/raw/yahoo_XLP_a03941c9ffdb6319.bin",
-    "retrieved_at": "2026-11-07T02:08:04.931558+00:00",
+    "sha256": "4fef9d67256f00f6663e9471a81d7a668de9a5fbfcf3aca62df7a91d05aec4fd",
+    "raw_file": "data/v17/raw/yahoo_XLP_4fef9d67256f00f6.bin",
+    "retrieved_at": "2026-11-08T01:39:40.342423+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLP?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": true
   },
   "price_XLV": {
-    "sha256": "79e508c7e5ce04239f4963439b30656111bf902bfad7d73ca75afbf3b9aa6e89",
-    "raw_file": "data/v17/raw/yahoo_XLV_79e508c7e5ce0423.bin",
-    "retrieved_at": "2026-11-07T02:08:04.964637+00:00",
+    "sha256": "bf37de2d11e213abd459a638b693a5230f6b19afc653b2a5827b8fba9ec18792",
+    "raw_file": "data/v17/raw/yahoo_XLV_bf37de2d11e213ab.bin",
+    "retrieved_at": "2026-11-08T01:39:40.333854+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLV?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": true
   },
   "price_XLU": {
-    "sha256": "b7b163f4f433b6681383e6408fd398fb91360e2f81d13ab9fe2bba10d617bb75",
-    "raw_file": "data/v17/raw/yahoo_XLU_b7b163f4f433b668.bin",
-    "retrieved_at": "2026-11-07T02:08:05.124354+00:00",
+    "sha256": "db6c0c65c9648737b1c187f41089347014f8da6a26960e45e7bfdabdb88fd07f",
+    "raw_file": "data/v17/raw/yahoo_XLU_db6c0c65c9648737.bin",
+    "retrieved_at": "2026-11-08T01:39:40.408138+00:00",
     "source_url": "https://query1.finance.yahoo.com/v8/finance/chart/XLU?period1=1672531200&period2=1794009600&interval=1d&events=history",
     "observed_on": "2026-11-06",
     "adjusted": true
@@ -90,7 +90,7 @@
   "NFCI": {
     "sha256": "c83e9610846bddbc9c5b85949c89215fea9876bf390a7bb047435040a0a79f3a",
     "raw_file": "data/v17/raw/fred_NFCI_c83e9610846bddbc.bin",
-    "retrieved_at": "2026-11-07T02:08:05.494104+00:00",
+    "retrieved_at": "2026-11-08T01:39:40.774135+00:00",
     "source_url": "https://fred.stlouisfed.org/series/NFCI",
     "observed_on": "2026-10-30",
     "vintage_asof": "2026-11-06",
@@ -98,13 +98,13 @@
     "release_evidence": {
       "sha256": "e4d5e6e7a4a1acb88c9050459affe362c73818f5c4d8cf23b0e9abde3c47fc77",
       "raw_file": "data/v17/raw/release_NFCI_e4d5e6e7a4a1acb8.bin",
-      "retrieved_at": "2026-11-07T02:08:06.316223+00:00"
+      "retrieved_at": "2026-11-08T01:39:41.581361+00:00"
     }
   },
   "CFNAIDIFF": {
     "sha256": "6a40b1cb2e810ea4887d5ecda7d746ea3bad0befde4259826f6b8d8deaca5656",
     "raw_file": "data/v17/raw/fred_CFNAIDIFF_6a40b1cb2e810ea4.bin",
-    "retrieved_at": "2026-11-07T02:08:05.851325+00:00",
+    "retrieved_at": "2026-11-08T01:39:41.019786+00:00",
     "source_url": "https://fred.stlouisfed.org/series/CFNAIDIFF",
     "observed_on": "2026-09-01",
     "vintage_asof": "2026-11-06",
@@ -112,13 +112,13 @@
     "release_evidence": {
       "sha256": "7dadfbeb4246d4e8105445a052c72cda21536700c5bbee42cefa9f31171ea2d0",
       "raw_file": "data/v17/raw/release_CFNAIDIFF_7dadfbeb4246d4e8.bin",
-      "retrieved_at": "2026-11-07T02:08:06.506828+00:00"
+      "retrieved_at": "2026-11-08T01:39:41.602723+00:00"
     }
   },
   "PERMIT": {
     "sha256": "e8ab97f9d119015b412faed919c2d25501c7990ac52cb22cfcf6df93242c58a0",
     "raw_file": "data/v17/raw/fred_PERMIT_e8ab97f9d119015b.bin",
-    "retrieved_at": "2026-11-07T02:08:05.366126+00:00",
+    "retrieved_at": "2026-11-08T01:39:40.644689+00:00",
     "source_url": "https://fred.stlouisfed.org/series/PERMIT",
     "observed_on": "2026-09-01",
     "vintage_asof": "2026-11-06",
@@ -126,13 +126,13 @@
     "release_evidence": {
       "sha256": "bd875f1e5329adc5c8cf50abd7118ce5cf1567585e37aaa691d1f92299e88945",
       "raw_file": "data/v17/raw/release_PERMIT_bd875f1e5329adc5.bin",
-      "retrieved_at": "2026-11-07T02:08:05.626949+00:00"
+      "retrieved_at": "2026-11-08T01:39:40.897224+00:00"
     }
   },
   "CPIAUCSL": {
     "sha256": "1166054b83cdf180dac99cc46dd2296744162b445e0a96688b3abfe2a4fc96a1",
     "raw_file": "data/v17/raw/fred_CPIAUCSL_1166054b83cdf180.bin",
-    "retrieved_at": "2026-11-07T02:08:05.336492+00:00",
+    "retrieved_at": "2026-11-08T01:39:40.674522+00:00",
     "source_url": "https://fred.stlouisfed.org/series/CPIAUCSL",
     "observed_on": "2026-09-01",
     "vintage_asof": "2026-11-06",
@@ -140,13 +140,13 @@
     "release_evidence": {
       "sha256": "354e0edecdb059dc261cab3eea6e62071a6659a13a718f709387861c9ffef38a",
       "raw_file": "data/v17/raw/release_CPIAUCSL_354e0edecdb059dc.bin",
-      "retrieved_at": "2026-11-07T02:08:05.612173+00:00"
+      "retrieved_at": "2026-11-08T01:39:40.943946+00:00"
     }
   },
   "DGS10": {
     "sha256": "f3f603abc024c6bf2a6b61573651af9e4e4bc427b70b28ac7620f03e6769c848",
     "raw_file": "data/v17/raw/fred_DGS10_f3f603abc024c6bf.bin",
-    "retrieved_at": "2026-11-07T02:08:05.433282+00:00",
+    "retrieved_at": "2026-11-08T01:39:40.795272+00:00",
     "source_url": "https://fred.stlouisfed.org/series/DGS10",
     "observed_on": "2026-11-05",
     "vintage_asof": "2026-11-06"
@@ -154,7 +154,7 @@
   "DGS2": {
     "sha256": "51221e94eb0f783cb1b36cd6e65a935f81bb815117542b3cf9d88f529166bef5",
     "raw_file": "data/v17/raw/fred_DGS2_51221e94eb0f783c.bin",
-    "retrieved_at": "2026-11-07T02:08:05.804353+00:00",
+    "retrieved_at": "2026-11-08T01:39:41.151520+00:00",
     "source_url": "https://fred.stlouisfed.org/series/DGS2",
     "observed_on": "2026-11-05",
     "vintage_asof": "2026-11-06"
@@ -162,7 +162,7 @@
   "DCPF3M": {
     "sha256": "d7ce3e04a41fc2157ecea6c43dd8592612748f5ed10763606a9aa90b2340d7fc",
     "raw_file": "data/v17/raw/fred_DCPF3M_d7ce3e04a41fc215.bin",
-    "retrieved_at": "2026-11-07T02:08:06.036369+00:00",
+    "retrieved_at": "2026-11-08T01:39:41.129753+00:00",
     "source_url": "https://fred.stlouisfed.org/series/DCPF3M",
     "observed_on": "2026-11-05",
     "vintage_asof": "2026-11-06"
@@ -170,7 +170,7 @@
   "DTB3": {
     "sha256": "a9e1520f24ed1e6184e96a5475afa36ccb29371b4f0a2125b7e431148b67956c",
     "raw_file": "data/v17/raw/fred_DTB3_a9e1520f24ed1e61.bin",
-    "retrieved_at": "2026-11-07T02:08:05.935024+00:00",
+    "retrieved_at": "2026-11-08T01:39:41.410327+00:00",
     "source_url": "https://fred.stlouisfed.org/series/DTB3",
     "observed_on": "2026-11-05",
     "vintage_asof": "2026-11-06"

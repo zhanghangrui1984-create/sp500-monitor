@@ -1,6 +1,6 @@
 {
   "policy": "single_missing_month_adjacent_original_mean",
-  "asof": "2026-11-09",
+  "asof": "2026-11-10",
   "source_file": "CPIAUCSL.csv",
   "calculation_file": "CPIAUCSL_calculation.csv",
   "fills": [

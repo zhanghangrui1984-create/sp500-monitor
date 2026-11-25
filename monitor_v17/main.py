@@ -31,6 +31,8 @@ def generate(now=None,offline=False):
     else:
         data,errors=collect(asof);facts,fact_errors=factset(asof)
         write_json(DATA/'source_metadata.json',{k:v[1] for k,v in data.items()})
+        from .shared_daily import publish as publish_shared
+        publish_shared(DATA,data,errors,asof)
     if offline:
         calendar_path=DATA/'cfnai_calendar.json'
         calendar=json.loads((calendar_path if calendar_path.exists() else BASE/'seed/cfnai_calendar.json').read_text(encoding='utf8'))

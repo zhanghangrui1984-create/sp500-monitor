@@ -49,6 +49,12 @@ def generate(now=None,offline=False):
     etfs=pd.concat({t:data['price_'+t][0] for t in ['XLF','SPY','XLY','XLI','XLB','XLP','XLV','XLU']},axis=1)
     sessions=cal.sessions_in_range('1957-01-02',asof).tz_localize(None)
     a,episodes=market_features(spx,data['price_^VIX'][0],data['price_^NDX'][0],etfs,sessions)
+    if not offline:
+        common=a.loc[etfs.index.min():,['FSC','FSC_1Y','FSX','CYCDEF_ratio','CYCDEF_change_pct']].copy()
+        for names,columns in [(['XLF','SPY'],['FSC','FSC_1Y','FSX']),
+                             (['XLY','XLI','XLB','XLP','XLV','XLU'],['CYCDEF_ratio','CYCDEF_change_pct'])]:
+            if any('price_'+s in errors for s in names):common[columns]=np.nan
+        common.to_csv(DATA/'shared_factors.csv',index_label='date')
     meta={};fail=set();warnings=[]
     mapping={'price_^GSPC':'SPX','price_^VIX':'VIX','price_^NDX':'NDX',
              **{'price_'+t:'ETF' for t in etfs.columns},'DGS10':'Treasury','DGS2':'Treasury',

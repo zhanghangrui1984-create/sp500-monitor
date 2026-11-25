@@ -34,9 +34,15 @@ def market_features(spx,vix,ndx,etfs,sessions):
     q=CONFIG['dynamic_drawdown'];dd,episodes,_=calculate_daily(spx.dropna(),episode_start=q['episode_start'],min_episodes=q['min_episodes'])
     for k in ['S_drawdown_pct','DD_P95','DD_P99','sample_count','input_cutoff']:a[k]=dd[k]
     a['NSX']=(ndx.reindex(idx)/spx)/(ndx.reindex(idx).shift(252)/spx.shift(252))-1
-    a['FSX']=calculate_fsx(etfs.XLF,etfs.SPY,idx).FSX
+    financial=calculate_fsx(etfs.XLF,etfs.SPY,idx)
+    a['FSX']=financial.FSX
+    a['FSC']=financial.ratio
+    a['FSC_1Y']=financial.ratio.shift(252)
     sector=sector_ratio(etfs,idx)
     a['CYCDEF_change_pct']=sector.change_pct;a['DEFENSE']=sector.DEFENSE
+    legs=etfs[['XLY','XLI','XLB','XLP','XLV','XLU']].dropna().iloc[0]
+    base=np.exp(np.log(legs.iloc[:3]).mean()-np.log(legs.iloc[3:]).mean())
+    a['CYCDEF_ratio']=sector.ratio*base/100
     return a,episodes
 
 def pe_weekly(seed,reports,spx,calendar,asof):
